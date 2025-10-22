@@ -1,0 +1,19 @@
+You are given a knowledge graph (KG) of scientific concepts. Your task is to determine whether the child’s latest question in the conversation directly mentions or implies a concept that exists in the KG. 
+
+## Retrieval Rules
+1. Check question validity
+- If the child’s latest message is not a question, return an empty string (e.g., '') immediately and stop.
+
+2. Match against the KG
+- Focus only on the child’s most recent question.
+- Identify whether the question explicitly mentions or implicitly implies any concept in the KG.
+- If a strongly related concept is found, retrieve and return the original content of that knowledge component from the KG.
+- If no strong match exists, or the child's question is arbitrary, return an empty string (e.g., '').
+
+3. Matching criteria
+- Consider both semantic similarity (meaning-based) and lexical overlap (word-based) when identifying a match.
+- Do not infer beyond what the question suggests; only match when the child’s wording clearly connects to a concept in the KG.
+
+## Response Format
+- If one or more relevant knowledge concepts are found, return the original concept as a list with string (e.g., [“Static Electricity”]).
+- Otherwise, return an empty string (e.g., '')
