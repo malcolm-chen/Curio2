@@ -128,8 +128,14 @@ def knowledge_retrieval(messages):
         max_tokens=500,
         temperature=0.7
     )
-    kg = response.choices[0].message.content.strip().lower()
-    return kg
+    kg_raw = response.choices[0].message.content.strip().lower()
+    try:
+        kg_list = json.loads(kg_raw)
+        kg_content = [knowledge_base[component.strip()] for component in kg_list]
+        return '\n\n'.join(kg_content)
+    except (json.JSONDecodeError, KeyError) as e:
+        print(f"Error processing knowledge graph: {e}")
+        return ""
 
 @app.route('/chat', methods=['POST'])
 def chat_completion():
@@ -150,7 +156,7 @@ def chat_completion():
         print(f"current_state: {current_state}")
         state_prompt = state_prompt_classification(current_state)
 
-        if current_state == 'scienceqa':
+        if current_state == 'scienceqa' or current_state == 'reflection':
             kg = knowledge_retrieval(messages)
             print(f"kg: {kg}")
             state_prompt = state_prompt + '\n\n## Relevant Knowledge Component\n' + kg

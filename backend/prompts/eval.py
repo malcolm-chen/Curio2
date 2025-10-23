@@ -31,8 +31,8 @@ scienceqa = """
 - You need to evaluate, throughout the whole conversation, ignoring the child's self-evaluation, if the child has already asked enough questions to understand the scientific knowledge.
 
 ## Response Format
-- If the child has already asked enough questions to understand the scientific phenomenon, respond with '<reflection>'.
-- If the child has not discovered the scientific phenomenon, or the child has not explored the scientific knowledge enough, respond with '<scienceqa>'.
+- If the child has already asked enough questions to understand the scientific knowledge, respond with '<reflection>'.
+- If the child has not asked enough questions to understand the scientific knowledge, respond with '<scienceqa>'.
 
 ## Language: English ONLY
 """
@@ -51,8 +51,8 @@ reflection = """
 - You need to evaluate, throughout the whole conversation, ignoring the child's self-evaluation, if the child has already asked enough questions to understand the scientific knowledge.
 
 ## Response Format
-- If the child has already asked enough questions to understand the scientific phenomenon, respond with '<closing>'.
-- If the child has not discovered the scientific phenomenon, respond with '<scienceqa>'.
+- If the child has already asked enough questions to understand the scientific knowledge, respond with '<reflection>'.
+- If the child has not asked enough questions to understand the scientific knowledge, respond with '<scienceqa>'.
 
 ## Language: English ONLY
 """
