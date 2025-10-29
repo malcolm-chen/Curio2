@@ -2,12 +2,12 @@
     "Hair stands up near a balloon": {
      "mechanism": "When the balloon is rubbed on the fleece sweater, the rubbing gives electrons (tiny negative charges) energy to move onto the balloon. This builds up static electricity, leaving the balloon negatively charged and the sweater or nearby hair with fewer electrons, which causes an imbalance of charges called a static charge. Because of this, the balloon attracts the nearby hair while the hairs repel each other, making them spread out like a spiky crown. Fleece transfers electrons well, so the effect is strong, while cotton does not, so no hair stands up. Children can test whether static electricity happens (hair moves or not) and how strong it is by changing variables like the material, number of rubs, distance, or their own creative measures.",
       "concepts": {
-        "Static Electricity": {
+        "static electricity": {
           "definition": "Static electricity is the build-up of electrical charges on objects that are not moving in a circuit.",
           "explanation": "After the child rubs the balloon on her fleece sweater, static electricity builds up on the balloon, changing how it interacts with her hair when the balloon is held near it. This does not happen for her sibling wearing a cotton shirt, because cotton does not build up static as strongly.",
           "ngss": ["3-PS2-3", "4-PS3-2"],
           "sub_concepts": {
-            "Charges": {
+            "charges": {
               "definition": "Objects can have two types of charge: positive (+) and negative (–).",
               "explanation": "Rubbing transfers negative charges, making the balloon negatively charged. The nearby hairs become positively charged or polarized, so they are pulled toward the balloon and push away from each other.",
               "ngss": ["3-PS2-4"],
@@ -17,31 +17,31 @@
                   "explanation": "Rubbing the balloon on the fleece sweater lets electrons jump onto the balloon, giving it a strong negative charge. Rubbing on cotton does not move many electrons, so the balloon stays mostly uncharged.",
                   "ngss": ["5-PS1-1"]
                 },
-                "Static Charge": {
+                "static charge": {
                   "definition": "An imbalance of charge happens when one object has too many negatives and the other has too few.",
                   "explanation": "The balloon rubbed on fleece ends up with extra electrons (negative). The child’s hair near the balloon is left with fewer electrons or becomes polarized, so it is pulled toward the balloon and the hairs spread apart. The sibling’s cotton shirt does not create this imbalance, so her balloon stays neutral and her hair does not move.",
                   "ngss": ["4-PS3-2"]
                 }
               }
             },
-            "Attraction & Repulsion": {
+            "attraction & repulsion": {
               "definition": "Opposite charges attract each other, and like charges repel each other, even without touching.",
               "explanation": "The negatively charged balloon attracts the nearby positively charged or polarized hair, lifting it up. At the same time, each hair strand has the same type of charge, so they repel one another, forming a 'spiky crown.' The sibling’s uncharged balloon does not cause any attraction or repulsion, so her hair stays flat.",
               "ngss": ["3-PS2-4"]
             }
           }
         },
-        "Energy Transfer by Rubbing": {
+        "energy transfer by rubbing": {
           "definition": "Rubbing provides the push that allows charges to move.",
           "explanation": "Rubbing the balloon on fleece gives electrons the energy to move onto the balloon, producing a strong static charge. Rubbing on cotton transfers very few charges, so little or no static electricity builds up. Without rubbing, the balloon stays neutral and no hair stands up.",
           "ngss": ["4-PS3-2"]
         },
-        "Material Properties": {
+        "material properties": {
           "definition": "Different materials release or hold charges differently.",
           "explanation": "Fleece is a synthetic material that donates electrons easily, so rubbing a balloon on fleece creates strong static electricity. Cotton is a natural fiber that does not transfer electrons as easily, so rubbing a balloon on cotton produces little or no static charge. This explains why one child’s balloon makes hair stand up while the sibling’s balloon does not, even though both have the same hair type and color.",
           "ngss": ["4-PS3-2"]
        },
-        "Measure Static Electricity": {
+        "measure static electricity": {
           "definition": "The effect of static electricity can be tested through measurable variables.",
           "explanation": "Children can test different measurable effects to explore static electricity. Examples include: (1) how many rubs on fleece vs. cotton are needed to make hair stand up, (2) how high or wide the hair spreads, or (3) how far the balloon can be from the hair and still make it move. Children may also invent their own ways to measure static electricity, such as how long the hair stays up or how many hairs are lifted.",
           "variables": ["number of rubs", "height/angle of hair spread", "balloon–hair distance",  "other child-invented measures"]

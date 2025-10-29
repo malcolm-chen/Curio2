@@ -7,6 +7,7 @@ import json
 import time
 from dotenv import load_dotenv
 from prompts.eval import scaffolding, scienceqa, reflection
+from prompts.scienceqa import level_0, level_1, level_2, level_3, level_4
 
 load_dotenv()
 app = Flask(__name__)
@@ -25,19 +26,21 @@ CURIO_SYSTEM_PROMPT = """## Role
 """
 
 state_history = []
+scienceqa_history = []
 
 def state_classification(state, messages, phenomenon):
     # Load prompt from the txt file
     if state == 'discover':
         return 'scienceqa_init'
     if state in ['greet', 'scaffolding']:
-        eval_prompt = format_prompt(scaffolding, phenomenon)
+        eval_prompt = format_prompt(scaffolding, phenomenon, messages)
     elif state in ['scienceqa_init', 'scienceqa']:
-        eval_prompt = format_prompt(scienceqa, phenomenon)
+        eval_prompt = format_prompt(scienceqa, phenomenon, messages)
     elif state in ['reflection']:
-        eval_prompt = format_prompt(reflection, phenomenon)
+        eval_prompt = format_prompt(reflection, phenomenon, messages)
+    messages = [{"role": "system", "content": eval_prompt}]
+    # print(f"messages: {messages}")
 
-    messages = messages + [{"role": "system", "content": eval_prompt}]
     response = client.chat.completions.create(
         model="gpt-4",
         messages=messages,
@@ -86,7 +89,7 @@ def state_update(current_state, eval_state):
     state_history.append(next_state)
     return next_state
 
-def state_prompt_classification(state):
+def state_prompt_classification(state, child_question_level=None):
     if state == 'greet':
         return open('prompts/greet.txt', 'r').read()
     elif state == 'scaffolding':
@@ -96,7 +99,16 @@ def state_prompt_classification(state):
     elif state == 'scienceqa_init':
         return open('prompts/scienceqa_init.txt', 'r').read()
     elif state == 'scienceqa':
-        return open('prompts/scienceqa.txt', 'r').read()
+        if int(child_question_level) == 0:
+            return level_0
+        elif int(child_question_level) == 1:
+            return level_1
+        elif int(child_question_level) == 2:
+            return level_2
+        elif int(child_question_level) == 3:
+            return level_3
+        elif int(child_question_level) == 4:
+            return level_4
     elif state == 'reflection':
         return open('prompts/reflection.txt', 'r').read()
     elif state == 'close':
@@ -104,14 +116,20 @@ def state_prompt_classification(state):
     else:
         return open('prompts/scienceqa.txt', 'r').read()
 
-def format_prompt(state_prompt, phenomenon='balloon'):
+def format_prompt(state_prompt, phenomenon='balloon', messages=None, child_question_level=None):
+    if messages is None:
+        messages = []
     if phenomenon == 'balloon':
         if '## Image Content' in state_prompt:
-            state_prompt = state_prompt.replace('## Image Content', '## Image Content\n- In the living room, a child wears a fleece sweater and holds a balloon near her hair. Suddenly, her hair stands straight up, each strand reaching away from the others like a spiky crown. The hairs are trying to get away from each other! Nearby, her sibling holds a balloon near her own hair, but nothing happens. The sibling\'s hair stays flat as she stares at her, amazed.')
+            state_prompt = state_prompt.replace('## Image Content', '## Image Content\n- In the living room, a child wears a fleece sweater and holds an orange balloon near her hair. Suddenly, her hair stands straight up, each strand reaching away from the others like a spiky crown. The hairs are trying to get away from each other! Nearby, her sibling holds a balloon near her own hair, but nothing happens. The sibling\'s hair stays flat as she stares at her, amazed.')
         if '## Scientific Phenomenon' in state_prompt:
             state_prompt = state_prompt.replace('## Scientific Phenomenon', '## Scientific Phenomenon\nThe right child\'s hair stands straight up.')
         if '## Scientific Knowledge' in state_prompt:
             state_prompt = state_prompt.replace('## Scientific Knowledge', '## Scientific Knowledge\nWhen you rub the balloon, you’re giving it electric energy. That energy creates a force strong enough to move your hair without touching it. The hairs also get energy and move away from each other. This shows how energy can cause motion without direct contact.')
+        if '## Child\'s Question' in state_prompt:
+            state_prompt = state_prompt.replace('## Child\'s Question', '## Child\'s Question\n' + messages[-1]['content'].strip())
+        if '## Conversation History' in state_prompt:
+            state_prompt = state_prompt.replace('## Conversation History', '## Conversation History\n' + json.dumps(messages))
     return state_prompt
 
 def knowledge_retrieval(messages):
@@ -119,8 +137,9 @@ def knowledge_retrieval(messages):
     retrieval_prompt = open('prompts/knowledge_matching.txt', 'r').read()
     knowledge_base = open('knowledge/kg.json', 'r').read()
     knowledge_base = json.loads(knowledge_base)
+    knowledge_concepts = list(knowledge_base['Hair stands up near a balloon']['concepts'].keys())
 
-    retrieval_prompt = retrieval_prompt + '\n\n## Knowledge Graph\n' + json.dumps(knowledge_base)
+    retrieval_prompt = retrieval_prompt + '\n\n## Knowledge Components\n' + json.dumps(knowledge_concepts)
     messages = messages + [{"role": "system", "content": retrieval_prompt}]
     response = client.chat.completions.create(
         model="gpt-4",
@@ -129,10 +148,22 @@ def knowledge_retrieval(messages):
         temperature=0.7
     )
     kg_raw = response.choices[0].message.content.strip().lower()
+    # print(f"kg_raw: {kg_raw}")
+    return kg_raw
+
+def format_kg(kg_raw):
+    knowledge_base = open('knowledge/kg.json', 'r').read()
+    knowledge_base = json.loads(knowledge_base)
     try:
         kg_list = json.loads(kg_raw)
-        kg_content = [knowledge_base[component.strip()] for component in kg_list]
-        return '\n\n'.join(kg_content)
+        kg_content = ''
+        for component in kg_list:
+            definition = knowledge_base['Hair stands up near a balloon']['concepts'][component]['definition']
+            explanation = knowledge_base['Hair stands up near a balloon']['concepts'][component]['explanation']
+            kg_content += "'" + component + "': " + definition + '\n\nExplanation: ' + explanation + '\n\n'
+        kg_content = kg_content.strip()
+        print(f"kg_content: {kg_content}")
+        return kg_content
     except (json.JSONDecodeError, KeyError) as e:
         print(f"Error processing knowledge graph: {e}")
         return ""
@@ -149,19 +180,61 @@ def chat_completion():
         data = request.get_json()
         messages = data.get('messages', [])
         state = (data.get('state') or 'greet').strip()
-        print(f"state: {state}")
-        eval_state = state_classification(state, messages, 'balloon')
-        print(f"eval_state: {eval_state}")
-        current_state = state_update(state, eval_state)
-        print(f"current_state: {current_state}")
-        state_prompt = state_prompt_classification(current_state)
+        if state != 'scienceqa':
+            print(f"state: {state}")
+            eval_state = state_classification(state, messages, 'balloon')
+            print(f"eval_state: {eval_state}")
+            current_state = state_update(state, eval_state)
+            print(f"current_state: {current_state}")
+            
+            # If transitioning to scienceqa, classify the question level immediately
+            if current_state == 'scienceqa':
+                child_question_level = state_classification(state, messages, 'balloon')
+                scienceqa_history.append(child_question_level)
+                print(f"child_question_level: {child_question_level}")
+                print(f"scienceqa_history: {scienceqa_history}")
+                state_prompt = state_prompt_classification(current_state, child_question_level)
+            else:
+                child_question_level = None
+                state_prompt = state_prompt_classification(current_state)
+        else:
+            # Check if we should move to reflection based on qualified questions
+            qualified_question_num = 0
+            for question in scienceqa_history:
+                if int(question) > 1:
+                    qualified_question_num += 1
+            
+            if qualified_question_num > 2:
+                current_state = 'reflection'
+                state_prompt = state_prompt_classification(current_state)
+                child_question_level = None
+            else:   
+                # Classify the child's question level
+                child_question_level = state_classification(state, messages, 'balloon')
+                scienceqa_history.append(child_question_level)
+                print(f"child_question_level: {child_question_level}")
+                print(f"scienceqa_history: {scienceqa_history}")
+                current_state = 'scienceqa'  # Stay in scienceqa state
+                state_prompt = state_prompt_classification(current_state, child_question_level)
 
-        if current_state == 'scienceqa' or current_state == 'reflection':
+        if current_state in ['scienceqa', 'reflection']:
             kg = knowledge_retrieval(messages)
             print(f"kg: {kg}")
-            state_prompt = state_prompt + '\n\n## Relevant Knowledge Component\n' + kg
+            if current_state == 'scienceqa' and child_question_level is not None and int(child_question_level) > 1:
+                state_prompt = state_prompt + '\n\n## Relevant Knowledge Components\n' + format_kg(kg)
+            elif current_state == 'scienceqa' and child_question_level is not None and int(child_question_level) == 1:
+                state_prompt = state_prompt + '\n\n## Relevant Knowledge Components\n' + kg
+            elif current_state == 'reflection':
+                state_prompt = state_prompt + '\n\n## Relevant Knowledge Components\n' + format_kg(kg)
+
         
-        state_prompt = format_prompt(state_prompt, 'balloon')
+        if current_state == 'scienceqa' and child_question_level is not None:
+            state_prompt = format_prompt(state_prompt, 'balloon', messages, child_question_level)
+            # print(f"state_prompt: {state_prompt}")
+        else:
+            state_prompt = format_prompt(state_prompt, 'balloon', messages)
+
+        # print(f"state_prompt: {state_prompt}")
 
         system_message = {"role": "system", "content": CURIO_SYSTEM_PROMPT}
         all_messages = [system_message] + messages + [{"role": "system", "content": state_prompt}]
