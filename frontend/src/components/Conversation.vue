@@ -46,8 +46,13 @@
 
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, nextTick } from 'vue'
-const apiUrl = import.meta.env.VITE_VUE_APP_URL || 'http://localhost:5000';
+const apiUrl = import.meta.env.VITE_VUE_APP_URL || 'http://localhost:5001';
 const openaiKey = import.meta.env.VITE_OPENAI_API_KEY as string ;
+
+// Props
+const props = defineProps<{
+  selectedImagePath?: string
+}>()
 // State
 const isLoading = ref(false)
 const isRecording = ref(false)
@@ -60,6 +65,7 @@ let mediaRecorder: MediaRecorder | null = null
 let audioChunks: Blob[] = []
 let audioContext: AudioContext | null = null
 let recorderMimeType = ''
+let currentAudio: HTMLAudioElement | null = null
 // Call OpenAI's transcription API directly from the browser
 // Note: This requires exposing an API key to the client (not recommended for production).
 const transcribeWithOpenAI = async (audioBlob: Blob): Promise<string> => {
@@ -217,7 +223,8 @@ const processAudio = async (audioBlob: Blob) => {
           role: msg.role,
           content: msg.content
         })),
-        state: convState.value
+        state: convState.value,
+        image_path: props.selectedImagePath
       })
     })
     
@@ -272,8 +279,14 @@ const generateAndPlayAudio = async (text: string) => {
     const audioUrl = URL.createObjectURL(audioBlob)
     const audio = new Audio(audioUrl)
     
+    // Store reference to current audio
+    currentAudio = audio
+    
     audio.onended = () => {
       URL.revokeObjectURL(audioUrl)
+      if (currentAudio === audio) {
+        currentAudio = null
+      }
     }
     
     await audio.play()
@@ -281,6 +294,7 @@ const generateAndPlayAudio = async (text: string) => {
     console.error('Error playing audio:', error)
   }
 }
+
 
 const generateInitialGreeting = async () => {
   const greetingText = "Hi, little detective! I'm Curio, your friendly science assistant. We are going to explore the scientific mystery in the image together! What do you find odd in this picture?"
@@ -564,6 +578,14 @@ onUnmounted(() => {
 @media (max-width: 768px) {
   .chat-container {
     height: 55vh;
+  }
+  
+  .chat-header {
+    padding: 15px;
+  }
+  
+  .chat-title {
+    font-size: 1.5em;
   }
   
   .push-to-talk-button {

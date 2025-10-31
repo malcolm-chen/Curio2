@@ -55,14 +55,13 @@ scienceqa = """
     - <3>: The child's question is about cause-and-effect with non-specific/measurable variables. (e.g., “What happens to hair if I rub the balloon on different clothes?”, “What happens if I rub the balloon for a longer time?”)
     - <4>: The child's question is about cause-and-effect with measurable and specific variables. (e.g., “How far can I hold the balloon away and still make the hair move?”, “To what degree does the distance between the balloon and the hair change the angle at which the hair stands?”)
 
-## Response Format
-- Return the evaluation only. Do not respond with anything else. E.g., '<0>', '<1>', '<2>', '<3>', '<4>'.
-
 ## Conversation History
 
 
 ## Child's Latest Question
 
+## Response Format
+- Return the evaluation only. Do not respond with anything else. E.g., '<0>', '<1>', '<2>', '<3>', '<4>'.
 """
 
 reflection = """

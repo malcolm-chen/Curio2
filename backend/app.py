@@ -119,25 +119,38 @@ def state_prompt_classification(state, child_question_level=None):
 def format_prompt(state_prompt, phenomenon='balloon', messages=None, child_question_level=None):
     if messages is None:
         messages = []
-    if phenomenon == 'balloon':
-        if '## Image Content' in state_prompt:
-            state_prompt = state_prompt.replace('## Image Content', '## Image Content\n- In the living room, a child wears a fleece sweater and holds an orange balloon near her hair. Suddenly, her hair stands straight up, each strand reaching away from the others like a spiky crown. The hairs are trying to get away from each other! Nearby, her sibling holds a balloon near her own hair, but nothing happens. The sibling\'s hair stays flat as she stares at her, amazed.')
-        if '## Scientific Phenomenon' in state_prompt:
-            state_prompt = state_prompt.replace('## Scientific Phenomenon', '## Scientific Phenomenon\nThe right child\'s hair stands straight up.')
-        if '## Scientific Knowledge' in state_prompt:
-            state_prompt = state_prompt.replace('## Scientific Knowledge', '## Scientific Knowledge\nWhen you rub the balloon, you’re giving it electric energy. That energy creates a force strong enough to move your hair without touching it. The hairs also get energy and move away from each other. This shows how energy can cause motion without direct contact.')
-        if '## Child\'s Question' in state_prompt:
-            state_prompt = state_prompt.replace('## Child\'s Question', '## Child\'s Question\n' + messages[-1]['content'].strip())
-        if '## Conversation History' in state_prompt:
-            state_prompt = state_prompt.replace('## Conversation History', '## Conversation History\n' + json.dumps(messages))
+    
+    phenomenon_json = json.load(open('prompts/phenomenon.json', 'r'))
+    phenomenon_data = phenomenon_json.get(phenomenon, {})
+    
+    if '## Image Content' in state_prompt:
+        state_prompt = state_prompt.replace('## Image Content', '## Image Content\n' + phenomenon_data.get('image_content', ''))
+    if '## Scientific Phenomenon' in state_prompt:
+        state_prompt = state_prompt.replace('## Scientific Phenomenon', '## Scientific Phenomenon\n' + phenomenon_data.get('phenomenon', ''))
+    if '## Scientific Knowledge' in state_prompt:
+        state_prompt = state_prompt.replace('## Scientific Knowledge', '## Scientific Knowledge\n' + phenomenon_data.get('knowledge', ''))
+    
+    if '## Child\'s Question' in state_prompt:
+        state_prompt = state_prompt.replace('## Child\'s Question', '## Child\'s Question\n' + messages[-1]['content'].strip())
+    if '## Conversation History' in state_prompt:
+        state_prompt = state_prompt.replace('## Conversation History', '## Conversation History\n' + json.dumps(messages))
     return state_prompt
 
-def knowledge_retrieval(messages):
+def knowledge_retrieval(messages, phenomenon='balloon'):
     # Load prompt from the txt file
     retrieval_prompt = open('prompts/knowledge_matching.txt', 'r').read()
     knowledge_base = open('knowledge/kg.json', 'r').read()
     knowledge_base = json.loads(knowledge_base)
-    knowledge_concepts = list(knowledge_base['Hair stands up near a balloon']['concepts'].keys())
+    
+    # Map phenomenon to knowledge base key
+    phenomenon_map = {
+        'balloon': 'Hair stands up near a balloon',
+        'bend': 'Bending Water Stream with a Comb',
+        'pepper': 'Pepper Leaping up to Spoon'
+    }
+    phenomenon_key = phenomenon_map.get(phenomenon, 'Hair stands up near a balloon')
+    
+    knowledge_concepts = list(knowledge_base[phenomenon_key]['concepts'].keys())
 
     retrieval_prompt = retrieval_prompt + '\n\n## Knowledge Components\n' + json.dumps(knowledge_concepts)
     messages = messages + [{"role": "system", "content": retrieval_prompt}]
@@ -151,15 +164,24 @@ def knowledge_retrieval(messages):
     # print(f"kg_raw: {kg_raw}")
     return kg_raw
 
-def format_kg(kg_raw):
+def format_kg(kg_raw, phenomenon='balloon'):
     knowledge_base = open('knowledge/kg.json', 'r').read()
     knowledge_base = json.loads(knowledge_base)
+    
+    # Map phenomenon to knowledge base key
+    phenomenon_map = {
+        'balloon': 'Hair stands up near a balloon',
+        'bend': 'Bending Water Stream with a Comb',
+        'pepper': 'Pepper Leaping up to Spoon'
+    }
+    phenomenon_key = phenomenon_map.get(phenomenon, 'Hair stands up near a balloon')
+    
     try:
         kg_list = json.loads(kg_raw)
         kg_content = ''
         for component in kg_list:
-            definition = knowledge_base['Hair stands up near a balloon']['concepts'][component]['definition']
-            explanation = knowledge_base['Hair stands up near a balloon']['concepts'][component]['explanation']
+            definition = knowledge_base[phenomenon_key]['concepts'][component]['definition']
+            explanation = knowledge_base[phenomenon_key]['concepts'][component]['explanation']
             kg_content += "'" + component + "': " + definition + '\n\nExplanation: ' + explanation + '\n\n'
         kg_content = kg_content.strip()
         print(f"kg_content: {kg_content}")
@@ -180,16 +202,28 @@ def chat_completion():
         data = request.get_json()
         messages = data.get('messages', [])
         state = (data.get('state') or 'greet').strip()
+        image_path = data.get('image_path', '')  # Get the selected image path
+        
+        # Determine the phenomenon based on image path
+        if 'balloon.jpg' in image_path:
+            phenomenon = 'balloon'
+        elif 'bend.jpg' in image_path:
+            phenomenon = 'bend'
+        elif 'pepper.jpg' in image_path:
+            phenomenon = 'pepper'
+        else:
+            phenomenon = 'balloon'  # default fallback
+        
         if state != 'scienceqa':
             print(f"state: {state}")
-            eval_state = state_classification(state, messages, 'balloon')
+            eval_state = state_classification(state, messages, phenomenon)
             print(f"eval_state: {eval_state}")
             current_state = state_update(state, eval_state)
             print(f"current_state: {current_state}")
             
             # If transitioning to scienceqa, classify the question level immediately
             if current_state == 'scienceqa':
-                child_question_level = state_classification(state, messages, 'balloon')
+                child_question_level = state_classification(state, messages, phenomenon)
                 scienceqa_history.append(child_question_level)
                 print(f"child_question_level: {child_question_level}")
                 print(f"scienceqa_history: {scienceqa_history}")
@@ -210,7 +244,7 @@ def chat_completion():
                 child_question_level = None
             else:   
                 # Classify the child's question level
-                child_question_level = state_classification(state, messages, 'balloon')
+                child_question_level = state_classification(state, messages, phenomenon)
                 scienceqa_history.append(child_question_level)
                 print(f"child_question_level: {child_question_level}")
                 print(f"scienceqa_history: {scienceqa_history}")
@@ -218,21 +252,21 @@ def chat_completion():
                 state_prompt = state_prompt_classification(current_state, child_question_level)
 
         if current_state in ['scienceqa', 'reflection']:
-            kg = knowledge_retrieval(messages)
+            kg = knowledge_retrieval(messages, phenomenon)
             print(f"kg: {kg}")
             if current_state == 'scienceqa' and child_question_level is not None and int(child_question_level) > 1:
-                state_prompt = state_prompt + '\n\n## Relevant Knowledge Components\n' + format_kg(kg)
+                state_prompt = state_prompt + '\n\n## Relevant Knowledge Components\n' + format_kg(kg, phenomenon)
             elif current_state == 'scienceqa' and child_question_level is not None and int(child_question_level) == 1:
                 state_prompt = state_prompt + '\n\n## Relevant Knowledge Components\n' + kg
             elif current_state == 'reflection':
-                state_prompt = state_prompt + '\n\n## Relevant Knowledge Components\n' + format_kg(kg)
+                state_prompt = state_prompt + '\n\n## Relevant Knowledge Components\n' + format_kg(kg, phenomenon)
 
         
         if current_state == 'scienceqa' and child_question_level is not None:
-            state_prompt = format_prompt(state_prompt, 'balloon', messages, child_question_level)
+            state_prompt = format_prompt(state_prompt, phenomenon, messages, child_question_level)
             # print(f"state_prompt: {state_prompt}")
         else:
-            state_prompt = format_prompt(state_prompt, 'balloon', messages)
+            state_prompt = format_prompt(state_prompt, phenomenon, messages)
 
         # print(f"state_prompt: {state_prompt}")
 
@@ -296,4 +330,4 @@ def generate_speech():
         return jsonify({'error': 'Speech generation failed'}), 500
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=5000)
+    app.run(debug=True, host='0.0.0.0', port=5001)
