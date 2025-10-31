@@ -84,7 +84,7 @@ Then, create a `.env` file in the `frontend/` directory:
 
 ```bash
 # frontend/.env
-VITE_VUE_APP_URL=http://localhost:5000
+VITE_VUE_APP_URL=http://localhost:5001
 VITE_OPENAI_API_KEY=your_openai_api_key_here
 ```
 
@@ -122,7 +122,7 @@ conda activate curio2
 python app.py
 ```
 
-The backend server will start on `http://localhost:5000`
+The backend server will start on `http://localhost:5001`
 
 ### Start the Frontend Development Server
 
