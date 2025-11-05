@@ -15,15 +15,15 @@ export const parseEvalPrompts = async () => {
       scaffolding: `## Role
 - You are an external evaluator of the conversation between a child and a science chatbot.
 
-## Scientific Phenomenon
+<Scientific Phenomenon>
 {scientificPhenomenon}
 
-## Evaluation Criteria
+<Evaluation Criteria>
 - You need to evaluate if the child has already noticed the scientific phenomenon based on the conversation. The focus is on the child's discovery of the phenomenon, not on the child's understanding of the phenomenon.
 - As long as the child has already noticed the scientific phenomenon, respond with '<scienceqa_init>' so we will move on to the next step.
 - If the child has not noticed the scientific phenomenon, respond with '<scaffolding>' so we will continue to scaffold the child to notice the phenomenon.
 
-## Response Format
+<Response Format>
 - Only choose between '<scienceqa_init>' and '<scaffolding>'. 
 Do not respond with anything else.
 
@@ -32,16 +32,16 @@ Do not respond with anything else.
       scienceqa: `## Role
 - You are an external evaluator of the conversation between a child and a science chatbot.
 
-## Scientific Phenomenon
+<Scientific Phenomenon>
 {scientificPhenomenon}
 
-## Scientific Knowledge
+<Scientific Knowledge>
 {scientificKnowledge}
 
-## Evaluation Criteria
+<Evaluation Criteria>
 - You need to evaluate, throughout the whole conversation, ignoring the child's self-evaluation, if the child has already asked enough questions to understand the scientific knowledge.
 
-## Response Format
+<Response Format>
 - If the child has already asked enough questions to understand the scientific phenomenon, respond with '<reflection>'.
 - If the child has not discovered the scientific phenomenon, respond with '<scienceqa>'.
 
@@ -50,16 +50,16 @@ Do not respond with anything else.
       reflection: `## Role
 - You are an external evaluator of the conversation between a child and a science chatbot.
 
-## Scientific Phenomenon
+<Scientific Phenomenon>
 {scientificPhenomenon}
 
-## Scientific Knowledge
+<Scientific Knowledge>
 {scientificKnowledge}
 
-## Evaluation Criteria
+<Evaluation Criteria>
 - You need to evaluate, throughout the whole conversation, ignoring the child's self-evaluation, if the child has already asked enough questions to understand the scientific knowledge.
 
-## Response Format
+<Response Format>
 - If the child has already asked enough questions to understand the scientific phenomenon, respond with '<closing>'.
 - If the child has not discovered the scientific phenomenon, respond with '<scienceqa>'.
 

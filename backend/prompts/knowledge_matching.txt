@@ -1,6 +1,6 @@
 You are given a knowledge graph (KG) of scientific components. Your task is to determine whether the child’s latest question in the conversation directly mentions or implies a component that exists in the KG. 
 
-## Retrieval Rules
+<Retrieval Rules>
 1. Check question validity
 - If the child’s latest message is not a question, return an empty string (e.g., '') immediately and stop.
 
@@ -13,7 +13,18 @@ You are given a knowledge graph (KG) of scientific components. Your task is to d
 3. Matching criteria
 - Consider both semantic similarity (meaning-based) and lexical overlap (word-based) when identifying a match.
 - Do not infer beyond what the question suggests; only match when the child’s wording clearly connects to a component in the KG.
+</Retrieval Rules>
 
-## Response Format
+<Conversation History>
+
+</Conversation History>
+
+<Child's Latest Question>
+
+</Child's Latest Question>
+
+<Response Format>
 - If one or more relevant knowledge components are found, return the original component name as a list with a string (e.g., [“static electricity”], ['static electricity', 'material properties']).
-- Otherwise, return an empty string (e.g., '')
+- The list should be ordered based on the *Relevancy* to the child’s question.
+- If no component is strongly relevant, return an empty string (e.g., '')
+</Response Format>

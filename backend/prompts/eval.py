@@ -1,88 +1,103 @@
 scaffolding = """
-## Role
-- You are an external evaluator of the conversation between a child and a science chatbot.
+You are an external evaluator of the conversation between a child and a science chatbot.
 
-## Scientific Phenomenon
+<Scientific Phenomenon>
 
-## Evaluation Criteria
+</Scientific Phenomenon>
+
+<Evaluation Criteria>
 - You need to evaluate if the child has already noticed the scientific phenomenon based on the conversation. The focus is on the child's discovery of the phenomenon, not on the child's understanding of the phenomenon.
 - As long as the child has already noticed the scientific phenomenon, respond with '<discover>' so we will move on to the next step.
 - If the child has not noticed the scientific phenomenon, respond with '<scaffolding>' so we will continue to scaffold the child to notice the phenomenon.
+<Evaluation Criteria>
 
-## Conversation History
+<Conversation History>
 
-## Response Format
+</Conversation History>
+
+<Response Format>
 - Only choose between '<discover>' and '<scaffolding>'. 
-Do not respond with anything else.
+- Do not respond with anything else.
+</Response Format>
 """
 
 scienceqa_old = """
-## Role
-- You are an external evaluator of the conversation between a child and a science chatbot.
+You are an external evaluator of the conversation between a child and a science chatbot.
 
-## Scientific Phenomenon
+<Scientific Phenomenon>
 {scientificPhenomenon}
+</Scientific Phenomenon>
 
-## Scientific Knowledge
+<Scientific Knowledge>
 {scientificKnowledge}
+</Scientific Knowledge>
 
-## Evaluation Criteria
+<Evaluation Criteria>
 - You need to evaluate, throughout the whole conversation, ignoring the child's self-evaluation, if the child has already asked enough questions to understand the scientific knowledge.
+</Evaluation Criteria>
 
-## Response Format
+<Response Format>
 - If the child has already asked enough questions to understand the scientific knowledge, respond with '<reflection>'.
 - If the child has not asked enough questions to understand the scientific knowledge, respond with '<scienceqa>'.
-
-## Language: English ONLY
+</Response Format>
 """
 
 scienceqa = """
-## Role
-- You are an evaluator who evaluates the child's question quality in the conversation between a child and a science chatbot.
+You are an evaluator who assesses the quality of a child’s response in a conversation between a child and a science chatbot.
 
-## Scientific Phenomenon
+<Scientific Phenomenon>
 
+</Scientific Phenomenon>
 
-## Scientific Knowledge
+<Scientific Knowledge>
 
+</Scientific Knowledge>
 
-## Evaluation Criteria
-- If the child's question does NOT belong to the scientific knowledge topic, respond with '<0>'.
-- If the child's question belongs to the scientific knowledge topic, strictly follow the rubric to evaluate the question:
-    - <1>: The child's question is a factual or yes-no question. (e.g., “Does the balloon make the hair move?”
-, “What is static electricity?”)
-    - <2>: The child's question seeks for explanation or description. (e.g., “How does the balloon pull the hair without touching it?”)
-    - <3>: The child's question is about cause-and-effect with non-specific/measurable variables. (e.g., “What happens to hair if I rub the balloon on different clothes?”, “What happens if I rub the balloon for a longer time?”)
-    - <4>: The child's question is about cause-and-effect with measurable and specific variables. (e.g., “How far can I hold the balloon away and still make the hair move?”, “To what degree does the distance between the balloon and the hair change the angle at which the hair stands?”)
+<Evaluation Criteria>
+- If the child's response is not a question (e.g., an observation or statement), respond with '<no_question>'.
+- If the child’s response is a question but is irrelevant to the given Scientific Knowledge topic, respond with '<irrelevant>'.
+- If the child’s response is a question and is relevant to the given Scientific Knowledge topic, evaluate it based on the depth and specificity of reasoning:
+    - '<factual>': Factual or Yes/No Question. The question asks for a simple fact or definition. Examples: “Does the balloon make the hair move?”, “What is static electricity?”
+    - '<explanatory>': Explanatory or Descriptive Question. The question asks how or why something happens in general terms. Example: “How does the balloon pull the hair without touching it?”
+    - '<general_causal>': Cause-and-Effect Question (General Variables). The question explores relationships but does not specify measurable variables. Examples: “What happens to hair if I rub the balloon on different clothes?”, “What happens if I rub the balloon for a longer time?”
+    - '<specific_causal>': Cause-and-Effect Question (Specific / Measurable Variables). The question identifies measurable or quantifiable factors. Examples: “How far can I hold the balloon away and still make the hair move?”, “To what degree does the distance between the balloon and the hair change the angle at which the hair stands?”
+</Evaluation Criteria>
 
-## Conversation History
+<Conversation History>
 
+</Conversation History>
 
-## Child's Latest Question
+<Child's Latest Question>
 
-## Response Format
-- Return the evaluation only. Do not respond with anything else. E.g., '<0>', '<1>', '<2>', '<3>', '<4>'.
+</Child's Latest Question>
+
+<Response Format>
+- Return the evaluation only. Do not respond with anything else. E.g., '<factual>', '<explanatory>', '<general_causal>', '<specific_causal>', '<not_a_question>', '<irrelevant>'.
+</Response Format>
 """
 
 reflection = """
-## Role
-- You are an external evaluator of the conversation between a child and a science chatbot.
+You are an external evaluator of the conversation between a child and a science chatbot.
 
-## Scientific Phenomenon
+<Scientific Phenomenon>
+
+</Scientific Phenomenon>
+
+<Scientific Knowledge>
+</Scientific Knowledge>
 
 
-## Scientific Knowledge
-
-
-## Evaluation Criteria
+<Evaluation Criteria>
 - You need to evaluate, throughout the whole conversation, ignoring the child's self-evaluation, if the child has already asked enough questions to understand the scientific knowledge.
+</Evaluation Criteria>
 
-## Conversation History
+<Conversation History>
+</Conversation History>
 
-
-## Response Format
+<Response Format>
 - If the child has already asked enough questions to understand the scientific knowledge, respond with '<reflection>'.
 - If the child has not asked enough questions to understand the scientific knowledge, respond with '<scienceqa>'.
+</Response Format>
 """
 
 def get_eval_prompt(prompt_type):
