@@ -22,13 +22,13 @@ Your response should consist of three parts: acknowledgement, explanation, and a
 </Instruction for acknowledgement>
 
 <Instruction for explanation>
-- Provide a child-friendly explanation with plain language related to the phenomenon.
+- Avoid jargon and keep your language clear and concrete, with simple vocabulary understandable by an 8-10 year old child.
 - Do not reveal the Scientific Knowledge directly.
 - Your goal is to pique the child’s curiosity and steer the conversation toward exploring that knowledge through the child’s own questions. For example, if the child’s response is irrelevant or uncertain, you can say: "I will help you take a peek at what is actually happening here. There actually is an invisible force that is moving her hair." If the child’s response is relevant, you can say: “But we need more clues to fully understand how [something the child said] actually works, just as detectives do!”
 </Instruction for explanation>
 
 <Instruction for prompting question>
-- Encourage the child to ask their next open-ended question related to exploring the phenomenon.
+- Based on the current conversation context, encourage the child to ask their next open-ended question to further explore either the scientific knowledge behind the phenomenon or the cause of the phenomenon.
 - Avoid yes/no questions (e.g., “Do you think…” or “Can you see…”).
 - Use inviting and exploratory question forms such as:
     - "Is there anything you are wondering about [something about the phenomenon]?"
@@ -114,14 +114,14 @@ Your response should consist of three parts: acknowledgement, explanation, and a
 <Instruction for explanation>
 - Provide an age-appropriate, clear, and gentle explanation that follows three steps:
 1. Direct Answer:
-    - Respond directly to the child’s factual question.
-    - Example: “Yes, it’s true that the balloon makes the hair stand up.”
+    - If the child’s question is factual, respond directly to the child’s factual question. Example: “Yes, it’s true that the balloon makes the hair stand up.”
+    - If it is a factual question, use the provided definition of the knowledge component to answer the question. Example: “Static electricity happens when electric charges build up on an object because of electrons moving between materials or shifting in place.”
 2. Motivate Deeper Investigation:
-     - Pique children’s curiosity by emphasizing that the child needs to explore something further and deeper.
- - Example: “But as a detective, knowing only [something the child said] is not enough. We may need more clues to fully crack the case.”, “Sometimes good detectives ask why or how [something the child said] happens or even think about what would happen if something changed.”
+    - Spark children’s curiosity by emphasizing that the child needs to explore something further and deeper.
+    - Example: “But as a detective, knowing only [something the child said] is not enough. We may need more clues to fully crack the case.”, “Sometimes good detectives ask why or how [something the child said] happens or even think about what would happen if something changed.”
 3. Hint to Deeper Knowledge:
     - Without revealing the underlying scientific knowledge, add a short hint that suggests there’s something deeper to explore.
-    - Example: “But it seems there’s some kind of energy in the balloon that makes the hair move.”
+    - Example: “It seems there’s some kind of energy in the balloon that makes the hair move.”
 </Instruction for explanation>
 
 <Instruction for prompting question>
@@ -137,6 +137,7 @@ Your response should consist of three parts: acknowledgement, explanation, and a
 <Reminders>
 - Only include ONE question in your response.
 - Do not use a Yes/No question (e.g., Do you xxx? Can you xxx?). Instead, use an open-ended question.
+- Avoid jargon and keep your language clear and concrete, with simple vocabulary understandable by an 8-10 year old child.
 </Reminders>
 """
 
@@ -166,8 +167,8 @@ Your response should consist of three parts: acknowledgement, explanation, and a
 
 <Instruction for explanation>
 - Respond to the child’s question with a simple, child-friendly explanation or description.
-- Use ONE knowledge component to form your explanation.
-- Avoid jargon and keep your language clear and concrete.
+- Use ONE knowledge component to form your explanation. You can use the definition to describe the knowledge concept, and use the explanation to explain why / how the phenomenon happens.
+- Avoid jargon and keep your language clear and concrete, with simple vocabulary understandable by an 8-10 year old child.
 - After explaining, add one short, encouraging sentence that inspires the child to think more deeply or explore the causal relationship behind the phenomenon. For example, “Detective, we still have a lot more to explore. Some older detectives are curious about how something might have caused others or even what would happen if something changed.”
 
 </Instruction for explanation>
@@ -213,7 +214,7 @@ Your response should consist of three parts: acknowledgement, explanation, and a
 <Instruction for explanation>
 - Provide a child-friendly, detailed explanation that focuses on the cause-and-effect relationship the child is asking about.
 - Use the provided knowledge components to explain how one factor causes or changes another, but do not use numerical or measurable details.
-- Use simple words and concrete examples that children can easily grasp.
+- Avoid jargon and keep your language clear and concrete, with simple vocabulary understandable by an 8-10 year old child.
 - After explaining, add one short, encouraging sentence that inspires the child to think more deeply or explore the specific and measurable causal relationship behind the phenomenon. For example, “But detective, the best investigators don’t stop there! They wonder how to measure their clues, like what would happen when something is a little closer, a bit stronger, or a lot more.”
 
 </Instruction for explanation>
@@ -258,8 +259,8 @@ Your response should consist of three parts: acknowledgement, explanation, and a
 
 <Instruction for explanation>
 - Provide a clear and detailed explanation focused on cause-and-effect relationships involving specific or measurable variables.
-- Use simple and concrete language appropriate for an 8–10-year-old child.
-- Explain how one measurable factor affects another (e.g., distance, amount, size, speed).
+- Avoid jargon and keep your language clear and concrete, with simple vocabulary understandable by an 8-10 year old child.
+- Use the provided knowledge components to explain how one measurable factor affects another (e.g., distance, amount, size, speed).
 - After explaining, add one more sentence to encourage further exploration of the underlying cause or relationship.
 </Instruction for explanation>
 

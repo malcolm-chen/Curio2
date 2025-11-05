@@ -54,9 +54,9 @@ You are an evaluator who assesses the quality of a child’s response in a conve
 </Scientific Knowledge>
 
 <Evaluation Criteria>
-- If the child's response is not a question (e.g., an observation or statement), respond with '<no_question>'.
-- If the child’s response is a question but is irrelevant to the given Scientific Knowledge topic, respond with '<irrelevant>'.
-- If the child’s response is a question and is relevant to the given Scientific Knowledge topic, evaluate it based on the depth and specificity of reasoning:
+1. If the child's response is *not a question* (e.g., an observation or statement), respond with '<no_question>'.
+2. If the child’s response is a question but is *irrelevant to the given scientific knowledge topic*, for example, the child is asking about irrelevant image details, or, as long as the child's question cannot lead to the discovery of the scientific knowledge behind the phenomenon, respond with '<irrelevant>'.
+3. If the child’s response is a question and is **relevant** to the given scientific knowledge topic, for example, the child is inferring or exploring the scientific knowledge behind the phenomenon, evaluate it based on the depth and specificity of reasoning:
     - '<factual>': Factual or Yes/No Question. The question asks for a simple fact or definition. Examples: “Does the balloon make the hair move?”, “What is static electricity?”
     - '<explanatory>': Explanatory or Descriptive Question. The question asks how or why something happens in general terms. Example: “How does the balloon pull the hair without touching it?”
     - '<general_causal>': Cause-and-Effect Question (General Variables). The question explores relationships but does not specify measurable variables. Examples: “What happens to hair if I rub the balloon on different clothes?”, “What happens if I rub the balloon for a longer time?”

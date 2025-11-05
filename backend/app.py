@@ -43,19 +43,20 @@ def state_classification(state, messages, phenomenon):
     messages = [{"role": "system", "content": eval_prompt}]
     # print(f"messages: {messages}")
 
-    # response = client.chat.completions.create(
-    #     model="gpt-5",
-    #     messages=messages,
-    #     max_completion_tokens=500
-    # )
+    response = client.chat.completions.create(
+        model="gpt-4",
+        messages=messages,
+        max_tokens=500
+    )
 
-    response = client.responses.create(
-            model="gpt-5",
-            input = messages,
-            reasoning={ "effort": "low" },
-        )
+    # response = client.responses.create(
+    #         model="gpt-5",
+    #         input = messages,
+    #         reasoning={ "effort": "low" },
+    #     )
 
-    content = response.output_text or ""
+    # content = response.output_text or ""
+    content = response.choices[0].message.content or ""
     eval_state = content.strip().lower().replace('<', '').replace('>', '')
     return eval_state
 
@@ -162,24 +163,25 @@ def knowledge_retrieval(messages, phenomenon='balloon'):
     retrieval_prompt = retrieval_prompt + '\n\n<Knowledge Components>\n' + json.dumps(knowledge_concepts) + '\n</Knowledge Components>'
 
     messages = [{"role": "system", "content": retrieval_prompt}]
-    # response = client.chat.completions.create(
-    #     model="gpt-5",
-    #     messages=messages,
-    #     max_completion_tokens=500
-    # )
+    response = client.chat.completions.create(
+        model="gpt-4",
+        messages=messages,
+        max_tokens=500
+    )
 
-    response = client.responses.create(
-            model="gpt-5",
-            input = messages,
-            reasoning={ "effort": "low" }
-        )
+    # response = client.responses.create(
+    #         model="gpt-5",
+    #         input = messages,
+    #         reasoning={ "effort": "low" }
+    #     )
 
-    content = response.output_text or ""
+    # content = response.output_text or ""
+    content = response.choices[0].message.content or ""
     kg_raw = content.strip().lower()
     # print(f"kg_raw: {kg_raw}")
     return kg_raw
 
-def format_kg(kg_raw, phenomenon='balloon'):
+def format_kg(mode='definition', kg_raw='', phenomenon='balloon'):
     knowledge_base = open('knowledge/kg.json', 'r').read()
     knowledge_base = json.loads(knowledge_base)
     
@@ -197,7 +199,12 @@ def format_kg(kg_raw, phenomenon='balloon'):
         for component in kg_list:
             definition = knowledge_base[phenomenon_key]['concepts'][component]['definition']
             explanation = knowledge_base[phenomenon_key]['concepts'][component]['explanation']
-            kg_content += "'" + component + "': " + definition + '\n\nExplanation: ' + explanation + '\n\n'
+            if mode == 'definition':
+                kg_content += "'" + component + "':\n\nDefinition: " + definition + '\n\n'
+            elif mode == 'explanation':
+                kg_content += "'" + component + "':\n\nExplanation: " + explanation + '\n\n'
+            elif mode == 'definition_and_explanation':
+                kg_content += "'" + component + "':\n\nDefinition: " + definition + '\n\nExplanation: ' + explanation + '\n\n'
         kg_content = kg_content.strip()
         print(f"kg_content: {kg_content}")
         return kg_content
@@ -254,7 +261,7 @@ def chat_completion():
             # Check if we should move to reflection based on qualified questions
             qualified_question_num = 0
             for question in scienceqa_history:
-                if int(question) > 1:
+                if question in ['explanatory', 'general_causal', 'specific_causal']:
                     qualified_question_num += 1
             
             if qualified_question_num > 2:
@@ -274,14 +281,16 @@ def chat_completion():
             if current_state == 'scienceqa' and child_question_level in ['factual', 'explanatory', 'general_causal', 'specific_causal']:
                 kg = knowledge_retrieval(messages, phenomenon)
                 print(f"kg: {kg}")
-                if child_question_level in ['explanatory', 'general_causal', 'specific_causal']:
-                    state_prompt = state_prompt + '\n\n<Relevant Knowledge Components>\n' + format_kg(kg, phenomenon) + '\n</Relevant Knowledge Components>'
-                elif child_question_level == 'factual':
-                    state_prompt = state_prompt + '\n\n<Relevant Knowledge Components>\n' + kg + '\n</Relevant Knowledge Components>'
+                if kg != '':
+                    if child_question_level in ['explanatory', 'general_causal', 'specific_causal']:
+                        state_prompt = state_prompt + '\n\n<Relevant Knowledge Components>\n' + format_kg('definition_and_explanation', kg, phenomenon) + '\n</Relevant Knowledge Components>'
+                    elif child_question_level == 'factual':
+                        state_prompt = state_prompt + '\n\n<Relevant Knowledge Components>\n' + format_kg('definition', kg, phenomenon) + '\n</Relevant Knowledge Components>'
             elif current_state == 'reflection':
                 kg = knowledge_retrieval(messages, phenomenon)
                 print(f"kg: {kg}")
-                state_prompt = state_prompt + '\n\n<Relevant Knowledge Components>\n' + format_kg(kg, phenomenon) + '\n</Relevant Knowledge Components>'
+                if kg != '':
+                    state_prompt = state_prompt + '\n\n<Relevant Knowledge Components>\n' + format_kg('definition_and_explanation', kg, phenomenon) + '\n</Relevant Knowledge Components>'
 
         
         if current_state == 'scienceqa' and child_question_level is not None:
@@ -305,20 +314,20 @@ def chat_completion():
 
         all_messages = [system_message] + messages + [{"role": "user", "content": state_prompt}]
 
-        # Generate response using gpt-5
-        # response = client.chat.completions.create(
-        #     model="gpt-5",
-        #     messages=all_messages,
-        #     max_completion_tokens=500
-        # )
-
-        response = client.responses.create(
-            model="gpt-5",
-            input = all_messages,
-            reasoning={ "effort": "low" },
+        response = client.chat.completions.create(
+            model="gpt-4",
+            messages=all_messages,
+            max_tokens=500
         )
 
-        content = response.output_text or ""
+        # response = client.responses.create(
+        #     model="gpt-5",
+        #     input = all_messages,
+        #     reasoning={ "effort": "low" },
+        # )
+
+        # content = response.output_text or ""
+        content = response.choices[0].message.content or ""
         # content = response.choices[0].message.content or ""
 
         return jsonify({'response': content, 'next_state': current_state})
