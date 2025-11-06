@@ -19,9 +19,9 @@ You are given a knowledge graph (KG) of scientific components. Your task is to d
 
 </Conversation History>
 
-<Child's Latest Question>
+<Child's Question>
 
-</Child's Latest Question>
+</Child's Question>
 
 <Response Format>
 - If one or more relevant knowledge components are found, return the original component name as a list with a string (e.g., [“static electricity”], ['static electricity', 'material properties']).

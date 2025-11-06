@@ -147,6 +147,7 @@ def format_prompt(state_prompt, phenomenon='balloon', messages=None, child_quest
 def knowledge_retrieval(messages, phenomenon='balloon'):
     # Load prompt from the txt file
     retrieval_prompt = open('prompts/knowledge_matching.txt', 'r').read()
+    retrieval_prompt = format_prompt(retrieval_prompt, phenomenon, messages)
     knowledge_base = open('knowledge/kg.json', 'r').read()
     knowledge_base = json.loads(knowledge_base)
     
@@ -162,6 +163,7 @@ def knowledge_retrieval(messages, phenomenon='balloon'):
 
     retrieval_prompt = retrieval_prompt + '\n\n<Knowledge Components>\n' + json.dumps(knowledge_concepts) + '\n</Knowledge Components>'
 
+    print(f"retrieval_prompt: {retrieval_prompt}")
     messages = [{"role": "system", "content": retrieval_prompt}]
     response = client.chat.completions.create(
         model="gpt-4",

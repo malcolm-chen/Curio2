@@ -67,9 +67,9 @@ You are an evaluator who assesses the quality of a child’s response in a conve
 
 </Conversation History>
 
-<Child's Latest Question>
+<Child's Question>
 
-</Child's Latest Question>
+</Child's Question>
 
 <Response Format>
 - Return the evaluation only. Do not respond with anything else. E.g., '<factual>', '<explanatory>', '<general_causal>', '<specific_causal>', '<not_a_question>', '<irrelevant>'.
