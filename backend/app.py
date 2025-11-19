@@ -671,4 +671,6 @@ init_db_viewer(SessionLocal, Conversation, Message)
 app.register_blueprint(db_viewer)
 
 if __name__ == "__main__":
-    app.run(debug=True, host="0.0.0.0", port=5001)
+    port = int(os.getenv("PORT", 5001))  # Default 5001 for local dev
+    debug = os.getenv("FLASK_ENV", "development") == "development"
+    app.run(debug=debug, host="0.0.0.0", port=port)

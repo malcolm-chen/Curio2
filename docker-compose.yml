@@ -40,8 +40,18 @@ services:
       dockerfile: Dockerfile
       args:
         - VITE_VUE_APP_URL=${VITE_VUE_APP_URL:-http://localhost:5001}
+    # Ports removed - access via nginx reverse proxy
+
+  nginx:
+    image: nginx:alpine
+    container_name: curio_nginx
     ports:
-      - "80:80"
+      - "8080:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - backend
+      - frontend
 
 volumes:
   postgres_data:
