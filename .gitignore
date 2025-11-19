@@ -1,3 +1,4 @@
+# Environment files
 .env
 .env.local
 .env.development.local
@@ -5,3 +6,17 @@
 .env.production.local
 backend/.env
 frontend/.env
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+dist/
+build/
+.venv/
+venv/
+ENV/
+env/
