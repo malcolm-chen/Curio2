@@ -46,7 +46,8 @@
 
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, nextTick } from 'vue'
-const apiUrl = import.meta.env.VITE_VUE_APP_URL || 'http://localhost:5001';
+// Use relative paths - works with nginx reverse proxy (local) and Ingress (prod)
+const apiUrl = '';
 
 // Props
 const props = defineProps<{
@@ -76,7 +77,7 @@ const transcribeWithBackend = async (audioBlob: Blob): Promise<string> => {
                audioBlob.type.includes('mp3') ? 'mp3' : 'wav'
   formData.append('audio', audioBlob, `recording.${ext}`)
 
-  const resp = await fetch(`${apiUrl}/api/transcribe`, {
+  const resp = await fetch('/api/transcribe', {
     method: 'POST',
     body: formData
   })
@@ -221,7 +222,7 @@ const processAudio = async (audioBlob: Blob, mimeType: string) => {
     // Get AI response using chat completion
     const audioBase64 = await blobToBase64(audioBlob)
 
-    const chatResponse = await fetch(`${apiUrl}/api/chat`, {
+    const chatResponse = await fetch('/api/chat', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -275,7 +276,7 @@ const processAudio = async (audioBlob: Blob, mimeType: string) => {
 
 const generateAndPlayAudio = async (text: string) => {
   try {
-    const response = await fetch(`${apiUrl}/api/speech`, {
+    const response = await fetch('/api/speech', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
