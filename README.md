@@ -7,15 +7,17 @@ A conversational AI system built with Flask backend and Vue.js frontend, designe
 
 ```
 ChatCompletion System/
-├── backend/           # Flask API server
-│   ├── app.py        # Main Flask application
-│   ├── knowledge/    # Knowledge graph data
-│   ├── prompts/      # AI prompt templates
+├── backend/              # Flask API server
+│   ├── app.py           # Main Flask application
+│   ├── database_viewer.py # Database viewer API endpoints
+│   ├── knowledge/       # Knowledge graph data
+│   ├── prompts/         # AI prompt templates
 │   └── requirements.txt
-├── frontend/         # Vue.js web application
-│   ├── src/         # Source code
-│   ├── public/      # Static assets
+├── frontend/            # Vue.js web application
+│   ├── src/            # Source code
+│   ├── public/         # Static assets
 │   └── package.json
+├── docker-compose.yml   # Docker Compose configuration
 └── README.md
 ```
 
@@ -147,9 +149,16 @@ The frontend will be available at `http://localhost:5173`
 
 The backend provides the following main endpoints:
 
+### Chat & Speech
 - `POST /api/chat` - Send messages and receive AI responses
-- `POST /api/evaluate` - Evaluate conversation quality
-- `GET /api/health` - Health check endpoint
+- `POST /api/speech` - Generate speech audio from text
+
+### Database Viewer (for viewing/downloading conversation data)
+- `GET /api/conversations` - List all conversations (supports `limit`, `offset`, `session_id`, `phenomenon` query params)
+- `GET /api/conversations/<conversation_id>` - Get detailed conversation with all messages
+- `GET /api/conversations/<conversation_id>/messages/<message_id>/audio` - Download audio file for a message
+- `GET /api/export` - Export all conversation data (supports `format=json` or `format=csv` query param)
+- `GET /api/stats` - Get database statistics
 
 ## Configuration
 
@@ -199,23 +208,34 @@ The system can be run using Docker Compose, which includes PostgreSQL database s
 
 ### 1. Environment Configuration
 
-Create a `.env` file in the project root (optional, for custom database credentials):
+**Required:** Create a `.env` file in the project root directory:
 
 ```bash
-# .env (optional - defaults are provided)
+# .env (in project root)
 POSTGRES_USER=curio
 POSTGRES_PASSWORD=curio_password
 POSTGRES_DB=curio_db
 ```
 
-Create a `backend/.env` file with your OpenAI API key:
+**Required:** Create a `backend/.env` file with your OpenAI API key:
 
 ```bash
 # backend/.env
 OPENAI_API_KEY=your_openai_api_key_here
 ```
 
-**Note**: The `DATABASE_URL` is automatically configured by Docker Compose. You don't need to set it manually in `backend/.env` when using Docker.
+**Optional:** If you want to customize the frontend build, you can also set these in the root `.env`:
+
+```bash
+# .env (optional frontend variables)
+VITE_VUE_APP_URL=http://localhost:5001
+VITE_OPENAI_API_KEY=your_openai_api_key_here
+```
+
+**Note**: 
+- The root `.env` file is used by `docker-compose.yml` to set database credentials via environment variable substitution
+- The `backend/.env` file is loaded by the backend service for the OpenAI API key
+- The `DATABASE_URL` is automatically constructed by the backend from `POSTGRES_*` environment variables set by docker-compose. You don't need to set it manually.
 
 ### 2. Build and Start Services
 
