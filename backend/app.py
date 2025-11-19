@@ -46,6 +46,13 @@ if not openai_api_key:
     raise ValueError("OPENAI_API_KEY environment variable is not set")
 client = OpenAI(api_key=openai_api_key)
 
+# OpenAI Model Configuration
+OPENAI_CHAT_MODEL = os.getenv("OPENAI_CHAT_MODEL", "gpt-4")
+OPENAI_WHISPER_MODEL = os.getenv("OPENAI_WHISPER_MODEL", "whisper-1")
+OPENAI_TTS_MODEL = os.getenv("OPENAI_TTS_MODEL", "tts-1")
+OPENAI_TTS_VOICE = os.getenv("OPENAI_TTS_VOICE", "alloy")
+OPENAI_MAX_TOKENS = int(os.getenv("OPENAI_MAX_TOKENS", "500"))
+
 # Database setup
 # Prioritize POSTGRES_* environment variables (set by docker-compose) over DATABASE_URL
 # This ensures we use the correct values even if DATABASE_URL is set incorrectly in .env
@@ -157,7 +164,7 @@ def state_classification(state, messages, phenomenon):
     # print(f"messages: {messages}")
 
     response = client.chat.completions.create(
-        model="gpt-4", messages=messages, max_tokens=500
+        model=OPENAI_CHAT_MODEL, messages=messages, max_tokens=OPENAI_MAX_TOKENS
     )
 
     # response = client.responses.create(
@@ -302,7 +309,7 @@ def knowledge_retrieval(messages, phenomenon="balloon"):
     print(f"retrieval_prompt: {retrieval_prompt}")
     messages = [{"role": "system", "content": retrieval_prompt}]
     response = client.chat.completions.create(
-        model="gpt-4", messages=messages, max_tokens=500
+        model=OPENAI_CHAT_MODEL, messages=messages, max_tokens=OPENAI_MAX_TOKENS
     )
 
     # response = client.responses.create(
@@ -397,7 +404,7 @@ def transcribe_audio():
     try:
         # Call OpenAI Whisper API from backend
         transcript = client.audio.transcriptions.create(
-            model="whisper-1", file=audio_file, response_format="json"
+            model=OPENAI_WHISPER_MODEL, file=audio_file, response_format="json"
         )
 
         return jsonify({"text": transcript.text}), 200
@@ -591,7 +598,7 @@ def chat_completion():
         )
 
         response = client.chat.completions.create(
-            model="gpt-4", messages=all_messages, max_tokens=500
+            model=OPENAI_CHAT_MODEL, messages=all_messages, max_tokens=OPENAI_MAX_TOKENS
         )
 
         content = response.choices[0].message.content or ""
@@ -646,7 +653,10 @@ def generate_speech():
 
         # Generate speech using OpenAI TTS
         response = client.audio.speech.create(
-            model="tts-1", voice="alloy", input=text, response_format="mp3"
+            model=OPENAI_TTS_MODEL,
+            voice=OPENAI_TTS_VOICE,
+            input=text,
+            response_format="mp3",
         )
 
         # Return the audio data
