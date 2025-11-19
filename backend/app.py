@@ -5,7 +5,7 @@ import os
 import time
 import uuid
 from collections import defaultdict
-from datetime import datetime
+from datetime import datetime, timezone
 from urllib.parse import quote_plus
 
 from dotenv import load_dotenv
@@ -369,6 +369,21 @@ def format_kg(mode="definition", kg_raw="", phenomenon="balloon"):
 def encode_image(image_path):
     with open(image_path, "rb") as image_file:
         return base64.b64encode(image_file.read()).decode("utf-8")
+
+
+@app.route("/api/health", methods=["GET"])
+def health():
+    """Health check endpoint"""
+    return (
+        jsonify(
+            {
+                "status": "healthy",
+                "service": "curio2-backend",
+                "timestamp": datetime.now(timezone.utc).isoformat(),
+            }
+        ),
+        200,
+    )
 
 
 @app.route("/api/chat", methods=["POST"])
