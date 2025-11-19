@@ -47,7 +47,6 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, nextTick } from 'vue'
 const apiUrl = import.meta.env.VITE_VUE_APP_URL || 'http://localhost:5001';
-const openaiKey = import.meta.env.VITE_OPENAI_API_KEY as string ;
 
 // Props
 const props = defineProps<{
@@ -69,32 +68,22 @@ let audioChunks: Blob[] = []
 // let audioContext: AudioContext | null = null
 let recorderMimeType = ''
 let currentAudio: HTMLAudioElement | null = null
-// Call OpenAI's transcription API directly from the browser
-// Note: This requires exposing an API key to the client (not recommended for production).
-const transcribeWithOpenAI = async (audioBlob: Blob): Promise<string> => {
-  if (!openaiKey) {
-    throw new Error('Missing VITE_OPENAI_API_KEY');
-  }
+// Call backend transcription API
+const transcribeWithBackend = async (audioBlob: Blob): Promise<string> => {
+  const formData = new FormData()
+  const ext = audioBlob.type.includes('webm') ? 'webm' :
+               audioBlob.type.includes('ogg') ? 'ogg' :
+               audioBlob.type.includes('mp3') ? 'mp3' : 'wav'
+  formData.append('audio', audioBlob, `recording.${ext}`)
 
-  const form = new FormData()
-  // Provide a filename extension matching mime when possible
-  const ext = audioBlob.type.includes('webm') ? 'webm' : audioBlob.type.includes('ogg') ? 'ogg' : audioBlob.type.includes('mp3') ? 'mp3' : 'wav'
-  form.append('file', audioBlob, `recording.${ext}`)
-  // Use Whisper v1 for REST audio transcription
-  form.append('model', 'whisper-1')
-  form.append('response_format', 'json')
-
-  const resp = await fetch('https://api.openai.com/v1/audio/transcriptions', {
+  const resp = await fetch(`${apiUrl}/api/transcribe`, {
     method: 'POST',
-    headers: {
-      Authorization: `Bearer ${openaiKey}`
-    },
-    body: form
+    body: formData
   })
 
   if (!resp.ok) {
     const errText = await resp.text().catch(() => '')
-    throw new Error(`OpenAI transcription failed: ${resp.status} ${errText}`)
+    throw new Error(`Transcription failed: ${resp.status} ${errText}`)
   }
 
   const json = await resp.json()
@@ -217,8 +206,8 @@ const processAudio = async (audioBlob: Blob, mimeType: string) => {
   isLoading.value = true
   
   try {
-    // 1) Transcribe audio directly with OpenAI
-    const userMessage = await transcribeWithOpenAI(audioBlob)
+    // 1) Transcribe audio via backend
+    const userMessage = await transcribeWithBackend(audioBlob)
     
     // Add user message to chat history
     chatHistory.value.push({

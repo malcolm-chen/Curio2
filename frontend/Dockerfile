@@ -5,11 +5,9 @@ WORKDIR /app
 
 # Accept build arguments for Vite environment variables
 ARG VITE_VUE_APP_URL
-ARG VITE_OPENAI_API_KEY
 
 # Set environment variables for build
 ENV VITE_VUE_APP_URL=$VITE_VUE_APP_URL
-ENV VITE_OPENAI_API_KEY=$VITE_OPENAI_API_KEY
 
 COPY package.json yarn.lock ./
 RUN yarn install --frozen-lockfile

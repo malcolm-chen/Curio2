@@ -386,6 +386,27 @@ def health():
     )
 
 
+@app.route("/api/transcribe", methods=["POST"])
+def transcribe_audio():
+    """Transcribe audio using OpenAI Whisper API"""
+    if "audio" not in request.files:
+        return jsonify({"error": "No audio file provided"}), 400
+
+    audio_file = request.files["audio"]
+
+    try:
+        # Call OpenAI Whisper API from backend
+        transcript = client.audio.transcriptions.create(
+            model="whisper-1", file=audio_file, response_format="json"
+        )
+
+        return jsonify({"text": transcript.text}), 200
+
+    except Exception as e:
+        app.logger.error(f"Transcription error: {str(e)}")
+        return jsonify({"error": "Transcription failed"}), 500
+
+
 @app.route("/api/chat", methods=["POST"])
 def chat_completion():
     """Generate chat response and a next_state using OpenAI"""
