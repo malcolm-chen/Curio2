@@ -59,11 +59,14 @@ const isRecording = ref(false)
 const chatHistory = ref<Array<{role: string, content: string, time: string}>>([])
 const messagesContainer = ref<HTMLElement>()
 const convState = ref<'greet' | 'scaffolding' | 'scienceqa_init' | 'scienceqa' | 'reflection' | 'close'>('greet')
+const conversationId = ref<string>(crypto.randomUUID())
+const sessionId = ref<string>(crypto.randomUUID())
 
 // Audio recording
 let mediaRecorder: MediaRecorder | null = null
 let audioChunks: Blob[] = []
-let audioContext: AudioContext | null = null
+// Unused - kept for potential future use with analyzeAudioBlob
+// let audioContext: AudioContext | null = null
 let recorderMimeType = ''
 let currentAudio: HTMLAudioElement | null = null
 // Call OpenAI's transcription API directly from the browser
@@ -99,40 +102,42 @@ const transcribeWithOpenAI = async (audioBlob: Blob): Promise<string> => {
 }
 
 // Analyze audio to detect invalid inputs (too short, tiny size, near-silence)
-const analyzeAudioBlob = async (audioBlob: Blob): Promise<{ durationSec: number; peak: number; rms: number }> => {
-  if (!audioContext) {
-    audioContext = new (window.AudioContext || (window as any).webkitAudioContext)()
-  }
-  const arrayBuf = await audioBlob.arrayBuffer()
-  const audioBuf = await audioContext.decodeAudioData(arrayBuf)
-  const channelData = audioBuf.getChannelData(0)
-  let peak = 0
-  let sumSquares = 0
-  for (let i = 0; i < channelData.length; i++) {
-    const v = channelData[i]
-    const av = Math.abs(v)
-    if (av > peak) peak = av
-    sumSquares += v * v
-  }
-  const rms = Math.sqrt(sumSquares / channelData.length)
-  return { durationSec: audioBuf.duration, peak, rms }
-}
+// Unused function - kept for potential future use
+// const analyzeAudioBlob = async (audioBlob: Blob): Promise<{ durationSec: number; peak: number; rms: number }> => {
+//   if (!audioContext) {
+//     audioContext = new (window.AudioContext || (window as any).webkitAudioContext)()
+//   }
+//   const arrayBuf = await audioBlob.arrayBuffer()
+//   const audioBuf = await audioContext.decodeAudioData(arrayBuf)
+//   const channelData = audioBuf.getChannelData(0)
+//   let peak = 0
+//   let sumSquares = 0
+//   for (let i = 0; i < channelData.length; i++) {
+//     const v = channelData[i] ?? 0
+//     const av = Math.abs(v)
+//     if (av > peak) peak = av
+//     sumSquares += v * v
+//   }
+//   const rms = Math.sqrt(sumSquares / channelData.length)
+//   return { durationSec: audioBuf.duration ?? 0, peak, rms }
+// }
 
-const isInvalidAudio = async (audioBlob: Blob): Promise<boolean> => {
-  // Size heuristic: extremely small payloads are likely invalid
-  if (audioBlob.size < 2000) return true
-  try {
-    const { durationSec, peak, rms } = await analyzeAudioBlob(audioBlob)
-    // Too short
-    if (durationSec < 0.6) return true
-    // Near-silence thresholds (tuned conservatively)
-    if (peak < 0.01 && rms < 0.005) return true
-    return false
-  } catch {
-    // If decoding fails, be conservative and allow transcription
-    return false
-  }
-}
+// Unused function - kept for potential future use
+// const isInvalidAudio = async (audioBlob: Blob): Promise<boolean> => {
+//   // Size heuristic: extremely small payloads are likely invalid
+//   if (audioBlob.size < 2000) return true
+//   try {
+//     const { durationSec, peak, rms } = await analyzeAudioBlob(audioBlob)
+//     // Too short
+//     if (durationSec < 0.6) return true
+//     // Near-silence thresholds (tuned conservatively)
+//     if (peak < 0.01 && rms < 0.005) return true
+//     return false
+//   } catch {
+//     // If decoding fails, be conservative and allow transcription
+//     return false
+//   }
+// }
 
 const getCurrentTime = () => {
   return new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
@@ -177,7 +182,7 @@ const startRecording = async () => {
     mediaRecorder.onstop = async () => {
       const blobType = recorderMimeType || mediaRecorder?.mimeType || 'audio/webm'
       const audioBlob = new Blob(audioChunks, { type: blobType })
-      await processAudio(audioBlob)
+      await processAudio(audioBlob, blobType)
     }
 
     mediaRecorder.start()
@@ -196,7 +201,19 @@ const stopRecording = () => {
   }
 }
 
-const processAudio = async (audioBlob: Blob) => {
+const blobToBase64 = async (blob: Blob): Promise<string> => {
+  const arrayBuffer = await blob.arrayBuffer()
+  const bytes = new Uint8Array(arrayBuffer)
+  const chunkSize = 0x8000
+  let binary = ''
+  for (let i = 0; i < bytes.length; i += chunkSize) {
+    const chunk = bytes.subarray(i, i + chunkSize)
+    binary += String.fromCharCode(...chunk)
+  }
+  return btoa(binary)
+}
+
+const processAudio = async (audioBlob: Blob, mimeType: string) => {
   isLoading.value = true
   
   try {
@@ -213,7 +230,9 @@ const processAudio = async (audioBlob: Blob) => {
     await scrollToBottom()
     
     // Get AI response using chat completion
-    const chatResponse = await fetch(`${apiUrl}/chat`, {
+    const audioBase64 = await blobToBase64(audioBlob)
+
+    const chatResponse = await fetch(`${apiUrl}/api/chat`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -224,7 +243,11 @@ const processAudio = async (audioBlob: Blob) => {
           content: msg.content
         })),
         state: convState.value,
-        image_path: props.selectedImagePath
+        image_path: props.selectedImagePath,
+        conversation_id: conversationId.value,
+        session_id: sessionId.value,
+        user_audio: audioBase64,
+        user_audio_mime_type: mimeType
       })
     })
     
@@ -263,7 +286,7 @@ const processAudio = async (audioBlob: Blob) => {
 
 const generateAndPlayAudio = async (text: string) => {
   try {
-    const response = await fetch(`${apiUrl}/speech`, {
+    const response = await fetch(`${apiUrl}/api/speech`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'

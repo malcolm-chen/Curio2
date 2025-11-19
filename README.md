@@ -24,6 +24,8 @@ ChatCompletion System/
 - **Python 3.8+** with pip
 - **Node.js 16+** with npm/yarn
 - **OpenAI API Key** (for AI functionality)
+- **Docker & Docker Compose** (for Docker setup)
+- **PostgreSQL** (included in Docker setup, or install separately for local development)
 
 ## Installation & Setup
 
@@ -190,3 +192,87 @@ npm run build
 
 # The built files will be in dist/
 ```
+
+## Docker Setup
+
+The system can be run using Docker Compose, which includes PostgreSQL database setup.
+
+### 1. Environment Configuration
+
+Create a `.env` file in the project root (optional, for custom database credentials):
+
+```bash
+# .env (optional - defaults are provided)
+POSTGRES_USER=curio
+POSTGRES_PASSWORD=curio_password
+POSTGRES_DB=curio_db
+```
+
+Create a `backend/.env` file with your OpenAI API key:
+
+```bash
+# backend/.env
+OPENAI_API_KEY=your_openai_api_key_here
+```
+
+**Note**: The `DATABASE_URL` is automatically configured by Docker Compose. You don't need to set it manually in `backend/.env` when using Docker.
+
+### 2. Build and Start Services
+
+```bash
+# From the project root directory
+docker-compose up --build
+```
+
+This will:
+- Start PostgreSQL database on port 5432
+- Start the backend service on port 5001
+- Start the frontend service on port 80
+- Automatically configure `DATABASE_URL` for the backend
+
+### 3. Database URL Configuration
+
+When using Docker, the `DATABASE_URL` is automatically set by docker-compose.yml:
+
+```
+postgresql://{POSTGRES_USER}:{POSTGRES_PASSWORD}@postgres:5432/{POSTGRES_DB}
+```
+
+The default values are:
+- **User**: `curio`
+- **Password**: `curio_password`
+- **Database**: `curio_db`
+- **Host**: `postgres` (Docker service name)
+
+To customize these values, set them in your root `.env` file or directly in `docker-compose.yml`.
+
+### 4. Accessing the Application
+
+- Frontend: http://localhost:80
+- Backend API: http://localhost:5001
+- PostgreSQL: localhost:5432 (for direct database access)
+
+### 5. Database Persistence
+
+The database data is stored in a Docker volume (`postgres_data`), so your data persists even when containers are stopped.
+
+### 6. Stopping Services
+
+```bash
+# Stop all services
+docker-compose down
+
+# Stop and remove volumes
+docker-compose down -v
+```
+
+### Using External PostgreSQL Database
+
+If you want to use an external PostgreSQL database instead of the Docker service:
+
+1. Remove or comment out the `postgres` service in `docker-compose.yml`
+2. Set `DATABASE_URL` in `backend/.env`:
+   ```bash
+   DATABASE_URL=postgresql://username:password@host:5432/database_name
+   ```
+3. Remove the `depends_on` section from the backend service in `docker-compose.yml`

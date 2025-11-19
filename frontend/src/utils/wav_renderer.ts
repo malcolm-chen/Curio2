@@ -32,9 +32,9 @@ const normalizeArray = (
       const index = Math.floor(i * (m / n));
       if (downsamplePeaks) {
         // take highest result in the set
-        result[index] = Math.max(result[index], Math.abs(data[i]));
+        result[index] = Math.max(result[index] ?? 0, Math.abs(data[i] ?? 0));
       } else {
-        result[index] += Math.abs(data[i]);
+        result[index] = (result[index] ?? 0) + Math.abs(data[i] ?? 0);
       }
       count[index]++;
     }
@@ -50,9 +50,11 @@ const normalizeArray = (
       const high = Math.ceil(index);
       const t = index - low;
       if (high >= n) {
-        result[i] = data[n - 1];
+        result[i] = data[n - 1] ?? 0;
       } else {
-        result[i] = data[low] * (1 - t) + data[high] * t;
+        const lowVal = data[low] ?? 0;
+        const highVal = data[high] ?? 0;
+        result[i] = lowVal * (1 - t) + highVal * t;
       }
     }
   }

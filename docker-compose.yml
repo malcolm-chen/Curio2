@@ -1,0 +1,48 @@
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: curio_postgres
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER:-curio}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-curio_password}
+      - POSTGRES_DB=${POSTGRES_DB:-curio_db}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-curio}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "5001:5001"
+    env_file:
+      - ./backend/.env
+    environment:
+      - VUE_APP_URL=${VUE_APP_URL:-http://localhost:80}
+      - POSTGRES_USER=${POSTGRES_USER:-curio}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-curio_password}
+      - POSTGRES_DB=${POSTGRES_DB:-curio_db}
+      - POSTGRES_HOST=postgres
+      - POSTGRES_PORT=5432
+    depends_on:
+      postgres:
+        condition: service_healthy
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        - VITE_VUE_APP_URL=${VITE_VUE_APP_URL:-http://localhost:5001}
+        - VITE_OPENAI_API_KEY=${VITE_OPENAI_API_KEY}
+    ports:
+      - "80:80"
+
+volumes:
+  postgres_data:
