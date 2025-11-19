@@ -47,7 +47,6 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, nextTick } from 'vue'
 // Use relative paths - works with nginx reverse proxy (local) and Ingress (prod)
-const apiUrl = '';
 
 // Props
 const props = defineProps<{
