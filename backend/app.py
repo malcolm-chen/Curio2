@@ -537,5 +537,10 @@ def generate_speech():
         print(f"Speech generation error: {e}")
         return jsonify({'error': 'Speech generation failed'}), 500
 
+# Register database viewer blueprint
+from database_viewer import db_viewer, init_db_viewer
+init_db_viewer(SessionLocal, Conversation, Message)
+app.register_blueprint(db_viewer)
+
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5001)
