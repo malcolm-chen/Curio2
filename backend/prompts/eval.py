@@ -101,19 +101,20 @@ You are an external evaluator of the conversation between a child and a science 
 </Response Format>
 """
 
+
 def get_eval_prompt(prompt_type):
     """
     Get evaluation prompt by type
-    
+
     Args:
         prompt_type (str): Type of prompt ('scaffolding', 'scienceqa', 'reflection')
-    
+
     Returns:
         str: The evaluation prompt template
     """
     prompts = {
-        'scaffolding': scaffolding,
-        'scienceqa': scienceqa,
-        'reflection': reflection
+        "scaffolding": scaffolding,
+        "scienceqa": scienceqa,
+        "reflection": reflection,
     }
     return prompts.get(prompt_type, scaffolding)
