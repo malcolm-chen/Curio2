@@ -9,7 +9,7 @@ from datetime import datetime, timezone
 from urllib.parse import quote_plus
 
 from dotenv import load_dotenv
-from flask import Flask, jsonify, request, send_from_directory, url_for
+from flask import Flask, jsonify, request
 from flask_cors import CORS
 from openai import OpenAI
 from prompts.eval import reflection, scaffolding, scienceqa
