@@ -628,7 +628,7 @@ def generate_speech():
 
 
 # Register database viewer blueprint
-from database_viewer import db_viewer, init_db_viewer
+from database_viewer import db_viewer, init_db_viewer  # noqa: E402
 
 init_db_viewer(SessionLocal, Conversation, Message)
 app.register_blueprint(db_viewer)

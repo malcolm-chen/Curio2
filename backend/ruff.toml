@@ -1,0 +1,13 @@
+# Ruff configuration for backend linting
+
+# Exclude auto-generated migration files
+exclude = [
+    "alembic/versions/*.py",
+]
+
+# Python version
+target-version = "py310"
+
+[lint]
+# Enable isort
+extend-select = ["I"]

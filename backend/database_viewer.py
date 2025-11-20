@@ -3,11 +3,9 @@ Database Viewer API endpoints for viewing and downloading conversation data
 """
 
 import io
-import json
 from datetime import datetime
 
 from flask import Blueprint, jsonify, request, send_file
-from sqlalchemy.orm import Session
 
 # Import will be done after app initialization to avoid circular import
 
