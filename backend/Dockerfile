@@ -28,6 +28,9 @@ COPY --from=builder /usr/local/bin /usr/local/bin
 # Copy application code
 COPY . .
 
+# Set permissions for entrypoint script
+RUN chmod +x entrypoint.sh
+
 EXPOSE 5001
 
-CMD ["python", "app.py"]
+CMD ["./entrypoint.sh"]

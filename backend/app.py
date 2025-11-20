@@ -1,5 +1,4 @@
 import base64
-import io
 import json
 import os
 import time
@@ -12,19 +11,13 @@ from dotenv import load_dotenv
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 from openai import OpenAI
+from sqlalchemy import create_engine
+from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy.orm import scoped_session, sessionmaker
+
+from models import Conversation, Message
 from prompts.eval import reflection, scaffolding, scienceqa
 from prompts.scienceqa import level_0, level_1, level_2, level_3, level_4, no_question
-from sqlalchemy import (
-    Column,
-    DateTime,
-    ForeignKey,
-    LargeBinary,
-    String,
-    Text,
-    create_engine,
-)
-from sqlalchemy.exc import SQLAlchemyError
-from sqlalchemy.orm import declarative_base, relationship, scoped_session, sessionmaker
 
 load_dotenv()
 app = Flask(__name__)
@@ -72,7 +65,7 @@ if postgres_user and postgres_password and postgres_host and postgres_db:
     encoded_password = quote_plus(postgres_password)
     database_url = f"postgresql://{postgres_user}:{encoded_password}@{postgres_host}:{postgres_port}/{postgres_db}"
     # Debug: print connection info (mask password)
-    print(f"Constructed DATABASE_URL from POSTGRES_* environment variables")
+    print("Constructed DATABASE_URL from POSTGRES_* environment variables")
     print(
         f"  User: {postgres_user}, Host: {postgres_host}, Port: {postgres_port}, Database: {postgres_db}"
     )
@@ -88,54 +81,14 @@ else:
         postgres_db = postgres_db or "curio_db"
         encoded_password = quote_plus(postgres_password)
         database_url = f"postgresql://{postgres_user}:{encoded_password}@{postgres_host}:{postgres_port}/{postgres_db}"
-        print(f"Constructed DATABASE_URL from defaults")
+        print("Constructed DATABASE_URL from defaults")
     else:
-        print(f"Using DATABASE_URL from environment")
+        print("Using DATABASE_URL from environment")
 
 engine = create_engine(database_url, pool_pre_ping=True)
 SessionLocal = scoped_session(
     sessionmaker(bind=engine, autocommit=False, autoflush=False)
 )
-Base = declarative_base()
-
-
-class Conversation(Base):
-    __tablename__ = "conversations"
-
-    id = Column(String, primary_key=True)
-    session_id = Column(String, nullable=False)
-    image_path = Column(String)
-    phenomenon = Column(String)
-    started_at = Column(DateTime, default=datetime.utcnow, nullable=False)
-    finished_at = Column(DateTime)
-    evaluation_result = Column(String)
-    created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
-    updated_at = Column(
-        DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False
-    )
-
-    messages = relationship(
-        "Message", back_populates="conversation", cascade="all, delete-orphan"
-    )
-
-
-class Message(Base):
-    __tablename__ = "messages"
-
-    id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
-    conversation_id = Column(String, ForeignKey("conversations.id"), nullable=False)
-    role = Column(String, nullable=False)
-    content = Column(Text, nullable=False)
-    state = Column(String)
-    evaluation_result = Column(String)
-    audio_data = Column(LargeBinary)
-    audio_mime_type = Column(String)
-    created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
-
-    conversation = relationship("Conversation", back_populates="messages")
-
-
-Base.metadata.create_all(engine)
 
 # Global variable to track conversation start times
 conversation_start_times = {}
