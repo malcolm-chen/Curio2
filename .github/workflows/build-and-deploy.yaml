@@ -1,0 +1,91 @@
+name: Build and Deploy
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      push_images:
+        description: 'Push Images to ECR'
+        required: false
+        default: true
+        type: boolean
+      deploy:
+        description: 'Deploy after build'
+        required: false
+        default: false
+        type: boolean
+
+jobs:
+  build:
+    env:
+      IMAGE_TAG: ${{ github.event_name == 'release' && github.event.release.tag_name || github.sha }}
+    permissions:
+      contents: read
+      id-token: write
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: ${{ secrets.AWS_REGION }}
+          role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/github-actions-${{ github.event.repository.owner.login }}-${{ github.event.repository.name }}
+
+      - name: Login to Amazon ECR
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build and push backend image
+        uses: docker/build-push-action@v6
+        with:
+          context: ./backend
+          push: ${{ github.event_name == 'release' || github.event.inputs.push_images == 'true' }}
+          tags: |
+            ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/curio2-backend:latest
+            ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/curio2-backend:${{ env.IMAGE_TAG }}
+
+      - name: Build and push frontend image
+        uses: docker/build-push-action@v6
+        with:
+          context: ./frontend
+          push: ${{ github.event_name == 'release' || github.event.inputs.push_images == 'true' }}
+          tags: |
+            ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/curio2-frontend:latest
+            ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/curio2-frontend:${{ env.IMAGE_TAG }}
+
+      - name: Export image tag
+        id: export_tag
+        run: |
+          echo "tag=${{ env.IMAGE_TAG }}" >> "$GITHUB_OUTPUT"
+
+    outputs:
+      tag: ${{ steps.export_tag.outputs.tag }}
+
+  deploy:
+    if: github.event_name == 'release' || github.event.inputs.deploy == 'true'
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger helm-charts workflow to deploy new image tags
+        env:
+          GH_TOKEN: ${{ secrets.HELM_CHARTS_GHA_PAT_TOKEN }}
+        run: |
+          curl -X POST \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer $GH_TOKEN" \
+            https://api.github.com/repos/ying-xu/helm-charts/actions/workflows/update-fullstack-app-image-tags.yaml/dispatches \
+            -d '{
+              "ref": "main",
+              "inputs": {
+                "new_tag": "${{ needs.build.outputs.tag }}",
+                "values_file_name": "values-curio2.yaml"
+              }
+            }'
