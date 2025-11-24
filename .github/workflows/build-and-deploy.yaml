@@ -6,12 +6,12 @@ on:
   workflow_dispatch:
     inputs:
       push_images:
-        description: 'Push Images to ECR'
+        description: "Push Images to ECR"
         required: false
         default: true
         type: boolean
       deploy:
-        description: 'Deploy after build'
+        description: "Deploy after build"
         required: false
         default: false
         type: boolean
@@ -86,6 +86,6 @@ jobs:
               "ref": "main",
               "inputs": {
                 "new_tag": "${{ needs.build.outputs.tag }}",
-                "values_file_name": "values-curio2.yaml"
+                "values_file_name": "values-scienceqa.yaml"
               }
             }'
