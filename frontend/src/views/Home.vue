@@ -3,7 +3,7 @@
     <!-- Left side - Image display -->
     <div class="image-section">
       <button @click="handleSwitchImage" class="switch-image-button">
-        🔄 Switch Image
+        <p class="switch-image-button-text">Choose Image</p>
       </button>
       <div class="image-container">
         <img 
@@ -12,7 +12,6 @@
           class="main-image"
           @error="handleImageError"
         />
-        <div class="image-frame"></div>
       </div>
     </div>
 
@@ -81,7 +80,7 @@ onMounted(() => {
   align-items: center;
   justify-content: center;
   padding: 20px;
-  background: linear-gradient(45deg, #ffecd2 0%, #fcb69f 100%);
+  background: #FFD000;
   position: relative;
 }
 
@@ -89,24 +88,30 @@ onMounted(() => {
   position: absolute;
   top: 20px;
   left: 20px;
-  background: rgba(102, 126, 234, 0.9);
+  background: #59A7F6;
   color: white;
-  border: 2px solid rgba(255, 255, 255, 0.6);
+  border: 6px solid #88E7FA;
   padding: 10px 20px;
-  border-radius: 25px;
+  border-radius: 100px;
   cursor: pointer;
   font-size: 1em;
   font-weight: bold;
   transition: all 0.3s ease;
   white-space: nowrap;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 6px 0 0 #008CBB;
   z-index: 10;
 }
 
+.switch-image-button-text {
+  font-family: 'Peachy Kink';
+  font-size: 2em;
+  color: #FFE600;
+}
+
 .switch-image-button:hover {
-  background: rgba(102, 126, 234, 1);
+  background: #59A7F6;
   transform: scale(1.05);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 6px 0 0 #008CBB;
 }
 
 .switch-image-button:active {
@@ -120,30 +125,16 @@ onMounted(() => {
 }
 
 .main-image {
-  width: 100%;
+  width: 90%;
   height: auto;
   max-height: 80vh;
   object-fit: contain;
-  border-radius: 20px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
   transition: transform 0.3s ease;
 }
 
 .main-image:hover {
   transform: scale(1.02);
-}
-
-.image-frame {
-  position: absolute;
-  top: -10px;
-  left: -10px;
-  right: -10px;
-  bottom: -10px;
-  border: 4px solid #ff6b9d;
-  border-radius: 25px;
-  background: linear-gradient(45deg, #ff6b9d, #c44569);
-  z-index: -1;
-  opacity: 0.3;
 }
 
 .chat-section {
@@ -152,7 +143,9 @@ onMounted(() => {
   align-items: center;
   justify-content: center;
   padding: 20px;
-  background: linear-gradient(45deg, #fecfef 0%,#fecfef 70%, #ffa8ab 100%);
+  background: #F75C46;
+  overflow: visible; /* Allow character image to overflow */
+  position: relative;
 }
 
 /* Responsive Design */

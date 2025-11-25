@@ -1,8 +1,8 @@
 <template>
   <div class="chat-container">
-    <!-- Chat header -->
-    <div class="chat-header">
-      <h1 class="chat-title">Curio</h1>
+    <!-- Character image - inside chat-container but outside chat-messages -->
+    <div class="curio-character">
+      <img src="/imgs/curio-character.png" alt="Curio" class="curio-character-image">
     </div>
 
     <!-- Chat messages area -->
@@ -139,6 +139,20 @@ const scrollToBottom = async () => {
   }
 }
 
+const scrollToLastAssistantMessageTop = async () => {
+  await nextTick()
+  if (messagesContainer.value) {
+    // Find the last assistant message element
+    const assistantMessages = messagesContainer.value.querySelectorAll('.message.assistant')
+    if (assistantMessages.length > 0) {
+      const lastMessage = assistantMessages[assistantMessages.length - 1] as HTMLElement
+      // Calculate the scroll position to align message top with container top
+      const messageOffsetTop = lastMessage.offsetTop
+      messagesContainer.value.scrollTop = messageOffsetTop
+    }
+  }
+}
+
 const handleMouseDown = async () => {
   if (!isRecording.value && !isLoading.value) {
     await startRecording()
@@ -256,7 +270,7 @@ const processAudio = async (audioBlob: Blob, mimeType: string) => {
     })
     convState.value = nextState
     
-    await scrollToBottom()
+    await scrollToLastAssistantMessageTop()
     
     // Generate and play audio response
     await generateAndPlayAudio(aiMessage)
@@ -268,6 +282,7 @@ const processAudio = async (audioBlob: Blob, mimeType: string) => {
       content: 'Sorry, I encountered an error. Please try again.',
       time: getCurrentTime()
     })
+    await scrollToLastAssistantMessageTop()
   } finally {
     isLoading.value = false
   }
@@ -362,20 +377,32 @@ onUnmounted(() => {
   width: 100%;
   max-width: 500px;
   height: 80vh;
-  background: white;
-  border-radius: 25px;
-  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
-  display: flex;
+  background: #FFEC99;
+  border: 8px solid white;
+  border-radius: 40px;
   flex-direction: column;
-  overflow: hidden;
+  overflow: visible; /* Allow character image to overflow */
+  position: relative;
+  z-index: 200; /* Higher z-index to ensure messages are above character */
+  padding: 10px;
 }
 
-/* Chat Header */
-.chat-header {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  padding: 20px;
-  text-align: center;
+.curio-character{
+  width: 20vw;
+  height: fit-content;
+  position: absolute; /* Absolute positioning relative to chat-container */
+  left: -12vw;
+  top: -12vh;
+  z-index: 0; /* Lower z-index - character below messages */
+  pointer-events: none; /* Allow clicks to pass through to messages */
+  overflow: visible; /* Ensure image can overflow */
+}
+
+.curio-character-image{
+  width: 20vw;
+  height: fit-content;
+  object-fit: contain;
+  pointer-events: auto; /* Re-enable pointer events for the image itself */
 }
 
 .chat-title {
@@ -393,14 +420,21 @@ onUnmounted(() => {
 /* Chat Messages */
 .chat-messages {
   flex: 1;
-  padding: 20px;
+  padding: 40px 20px 40px 60px;
+  height: 70vh;
   overflow-y: auto;
-  background: #f8f9ff;
+  overflow-x: hidden; /* Standard overflow for scrollable container */
+  border-radius: 40px;
+  position: relative;
+  z-index: 300; /* Highest layer - messages container above character */
+  transform: translateZ(0); /* Force hardware acceleration and new stacking context */
 }
 
 .message {
   margin-bottom: 15px;
   display: flex;
+  position: relative;
+  z-index: 1; /* Ensure messages are in the stacking context */
 }
 
 .message.user {
@@ -412,24 +446,30 @@ onUnmounted(() => {
 }
 
 .message-bubble {
-  max-width: 80%;
+  /* max-width: 80%; */
   padding: 12px 16px;
   border-radius: 20px;
   position: relative;
+  z-index: 10; /* Higher z-index to ensure visibility above character */
 }
 
 .message.user .message-bubble {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
-  border-bottom-right-radius: 5px;
+  font-family: 'Peachy Kink';
+  font-size: 1.5em;
+  border: 6px solid white;
+  border-bottom-right-radius: 0px;
 }
 
 .message.assistant .message-bubble {
-  background: white;
-  color: #333;
-  border: 2px solid #e0e0e0;
-  border-bottom-left-radius: 5px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  background: #008CBB;
+  color: #ffffff;
+  font-family: 'Peachy Kink';
+  font-size: 1.5em;
+  border: 6px solid white;
+  border-top-left-radius: 0px;
+  position: relative;
 }
 
 .message-text {
@@ -469,8 +509,8 @@ onUnmounted(() => {
 /* Push-to-Talk Input */
 .chat-input-area {
   padding: 20px;
-  background: white;
-  border-top: 2px solid #f0f0f0;
+  position: relative;
+  z-index: 200; /* Same as messages - above character */
 }
 
 .push-to-talk-container {
@@ -480,25 +520,28 @@ onUnmounted(() => {
 }
 
 .push-to-talk-button {
-  width: 200px;
-  height: 200px;
+  font-family: 'Peachy Kink';
+  color: #FFE600;
+  font-size: 2em;
+  width: 380px;
+  height: 100px;
   border: none;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
+  border-radius: 100px;
+  background: #686DF4;
+  border: 6px solid #D4C5FA;
   cursor: pointer;
   transition: all 0.3s ease;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+  box-shadow: 0 6px 0 0 #3F4296;
   position: relative;
   overflow: hidden;
 }
 
 .push-to-talk-button:hover:not(:disabled) {
   transform: scale(1.05);
-  box-shadow: 0 12px 35px rgba(102, 126, 234, 0.4);
+  box-shadow: 0 6px 0 0 #3F4296;
 }
 
 .push-to-talk-button:active {
@@ -507,33 +550,36 @@ onUnmounted(() => {
 
 .push-to-talk-button.recording {
   background: linear-gradient(135deg, #ff6b9d 0%, #c44569 100%);
+  border: 6px solid #ffbdcb;
   animation: pulse 1.5s infinite;
-  box-shadow: 0 8px 25px rgba(255, 107, 157, 0.4);
+  box-shadow: 0 6px 0 0 #d73475;
 }
 
 .push-to-talk-button.loading {
   background: linear-gradient(135deg, #ffa726 0%, #ff7043 100%);
+  border: 6px solid #fdc77b;
+  box-shadow: 0 6px 0 0 #ffa323;
   cursor: not-allowed;
 }
 
 .push-to-talk-button:disabled {
-  opacity: 0.7;
   cursor: not-allowed;
   transform: none;
 }
 
 .button-content {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
   justify-content: center;
   text-align: center;
 }
 
 .mic-icon, .recording-icon, .loading-icon {
-  font-size: 3em;
+  font-size: 1.5em;
   margin-bottom: 10px;
   display: block;
+  margin-right: 10px;
 }
 
 .recording-icon {
@@ -577,9 +623,9 @@ onUnmounted(() => {
   }
 }
 
-.loading {
+/* .loading {
   animation: spin 1s linear infinite;
-}
+} */
 
 @keyframes spin {
   from { transform: rotate(0deg); }

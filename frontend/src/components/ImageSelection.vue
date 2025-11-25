@@ -2,7 +2,6 @@
   <div class="image-selection-container">
     <div class="selection-header">
       <h1 class="selection-title">Choose a Mystery Image!</h1>
-      <p class="selection-subtitle">Select an image to explore with Curio!</p>
     </div>
     
     <div class="images-grid">
@@ -35,7 +34,7 @@
         :disabled="!selectedImage"
         class="confirm-button"
       >
-        Start Adventure!
+        <p class="confirm-button-text">Start</p>
       </button>
     </div>
   </div>
@@ -88,6 +87,17 @@ const handleConfirm = () => {
 }
 </script>
 
+
+<style>
+@font-face {
+  font-family: 'Peachy Kink';
+  src: url('../assets/fonts/peachy-keen-jf.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+</style>
+
 <style scoped>
 .image-selection-container {
   width: 100%;
@@ -97,18 +107,26 @@ const handleConfirm = () => {
   align-items: center;
   justify-content: center;
   padding: 40px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: #F75C46;
   font-family: 'Comic Sans MS', cursive, sans-serif;
 }
 
 .selection-header {
   text-align: center;
-  margin-bottom: 40px;
+  margin-bottom: 20px;
+  margin-top: 0;
+  padding-top: 0;
+  position: relative;
+  top: -60px;
 }
 
 .selection-title {
-  font-size: 3em;
-  color: white;
+  font-family: 'Peachy Kink';
+  font-size: 7em;
+  color: #FAE100;
+  border-color: #0011BB;
+  -webkit-text-stroke: 4px #0011BB;
+  text-stroke: 4px #0011BB;
   margin-bottom: 10px;
   text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.3);
 }
@@ -122,10 +140,10 @@ const handleConfirm = () => {
 .images-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 30px;
-  max-width: 900px;
+  gap: 40px;
+  max-width: 80vw;
   width: 100%;
-  margin-bottom: 40px;
+  margin-bottom: 60px;
 }
 
 .image-card {
@@ -143,21 +161,22 @@ const handleConfirm = () => {
 
 .card-frame {
   position: relative;
-  border-radius: 20px;
+  border-radius: 30px;
   overflow: hidden;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-  border: 4px solid transparent;
+  border: 8px solid white;
   transition: all 0.3s ease;
+  height: 310px;
 }
 
 .image-card.selected .card-frame {
-  border-color: #ff6b9d;
-  box-shadow: 0 15px 40px rgba(255, 107, 157, 0.5);
+  border-color: #ffe96b;
+  box-shadow: 0 15px 40px rgba(255, 235, 107, 0.5);
 }
 
 .preview-image {
   width: 100%;
-  height: 250px;
+  height: 300px;
   object-fit: cover;
   transition: transform 0.3s ease;
 }
@@ -172,7 +191,7 @@ const handleConfirm = () => {
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(to bottom, rgba(102, 126, 234, 0.1), rgba(255, 107, 157, 0.7));
+  background: linear-gradient(to bottom, rgba(255, 235, 107, 0.1), rgba(255, 235, 107, 0.7));
   display: flex;
   align-items: flex-end;
   padding: 20px;
@@ -204,22 +223,28 @@ const handleConfirm = () => {
 }
 
 .confirm-button {
-  background: linear-gradient(135deg, #ff6b9d 0%, #c44569 100%);
-  color: white;
+  background: #FFD000;
+  color: #1266FF;
   border: none;
-  padding: 20px 50px;
-  border-radius: 50px;
-  font-size: 1.5em;
-  font-weight: bold;
+  padding: 0px 40px;
+  border-radius: 100px;
+  border-color: #FFF48C;
+  border-width: 8px;
+  border-style: solid;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 8px 25px rgba(255, 107, 157, 0.4);
+  box-shadow: 0 10px 0 0 #FF8C42;
   font-family: 'Comic Sans MS', cursive, sans-serif;
 }
 
+.confirm-button-text {
+  font-family: 'Peachy Kink';
+  font-size: 7em;
+  font-weight: bold;
+}
 .confirm-button:hover:not(:disabled) {
   transform: scale(1.05);
-  box-shadow: 0 12px 35px rgba(255, 107, 157, 0.6);
+  box-shadow: 0 10px 0 0 #FF8C42;
 }
 
 .confirm-button:disabled {
