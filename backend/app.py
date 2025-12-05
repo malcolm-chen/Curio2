@@ -1,4 +1,5 @@
 import base64
+import io
 import json
 import os
 import time
@@ -352,12 +353,24 @@ def transcribe_audio():
     if "audio" not in request.files:
         return jsonify({"error": "No audio file provided"}), 400
 
-    audio_file = request.files["audio"]
+    audio_file_storage = request.files["audio"]
 
     try:
+        # Read the file content as bytes
+        audio_bytes = audio_file_storage.read()
+        
+        # Create a BytesIO object from the bytes
+        audio_file = io.BytesIO(audio_bytes)
+        
+        # Get filename or use default
+        filename = audio_file_storage.filename or "audio.webm"
+        
         # Call OpenAI Whisper API from backend
+        # OpenAI API expects (filename, file-like object) tuple
         transcript = client.audio.transcriptions.create(
-            model=OPENAI_WHISPER_MODEL, file=audio_file, response_format="json"
+            model=OPENAI_WHISPER_MODEL,
+            file=(filename, audio_file),
+            response_format="json"
         )
 
         return jsonify({"text": transcript.text}), 200
