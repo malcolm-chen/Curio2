@@ -358,19 +358,19 @@ def transcribe_audio():
     try:
         # Read the file content as bytes
         audio_bytes = audio_file_storage.read()
-        
+
         # Create a BytesIO object from the bytes
         audio_file = io.BytesIO(audio_bytes)
-        
+
         # Get filename or use default
         filename = audio_file_storage.filename or "audio.webm"
-        
+
         # Call OpenAI Whisper API from backend
         # OpenAI API expects (filename, file-like object) tuple
         transcript = client.audio.transcriptions.create(
             model=OPENAI_WHISPER_MODEL,
             file=(filename, audio_file),
-            response_format="json"
+            response_format="json",
         )
 
         return jsonify({"text": transcript.text}), 200
