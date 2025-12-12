@@ -372,6 +372,8 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap');
+
 /* Chat Section */
 .chat-container {
   width: 100%;
@@ -456,8 +458,8 @@ onUnmounted(() => {
 .message.user .message-bubble {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
-  font-family: 'Peachy Kink';
-  font-size: 1.5em;
+  font-family: 'Roboto';
+  font-size: 1.3em;
   border: 6px solid white;
   border-bottom-right-radius: 0px;
 }
@@ -465,8 +467,8 @@ onUnmounted(() => {
 .message.assistant .message-bubble {
   background: #008CBB;
   color: #ffffff;
-  font-family: 'Peachy Kink';
-  font-size: 1.5em;
+  font-family: 'Roboto';
+  font-size: 1.3em;
   border: 6px solid white;
   border-top-left-radius: 0px;
   position: relative;
@@ -523,7 +525,7 @@ onUnmounted(() => {
   font-family: 'Peachy Kink';
   color: #FFE600;
   font-size: 2em;
-  width: 380px;
+  width: min(90%, 380px);
   height: 100px;
   border: none;
   border-radius: 100px;
@@ -633,33 +635,170 @@ onUnmounted(() => {
 }
 
 /* Responsive Design */
-@media (max-width: 768px) {
-  .chat-container {
-    height: 55vh;
+@media (max-width: 1024px) {
+  .curio-character {
+    width: 15vw;
+    left: -8vw;
+    top: -8vh;
   }
   
-  .chat-header {
-    padding: 15px;
+  .curio-character-image {
+    width: 15vw;
   }
   
-  .chat-title {
-    font-size: 1.5em;
+  .chat-messages {
+    padding: 30px 15px 30px 50px;
   }
   
   .push-to-talk-button {
-    width: 150px;
-    height: 150px;
-  }
-  
-  .mic-icon, .recording-icon, .loading-icon {
-    font-size: 2.5em;
+    width: 320px;
+    height: 90px;
+    font-size: 1.8em;
   }
   
   .button-text {
-    font-size: 1em;
+    font-size: 1.1em;
+  }
+}
+
+@media (max-width: 768px) {
+  .chat-container {
+    height: 70vh;
+    max-width: 100%;
+    padding: 8px;
+    border-width: 4px;
+    border-radius: 30px;
+  }
+  
+  .curio-character {
+    width: 25vw;
+    left: -10vw;
+    top: -6vh;
+  }
+  
+  .curio-character-image {
+    width: 25vw;
+  }
+  
+  .chat-messages {
+    padding: 30px 15px 30px 40px;
+    height: 60vh;
+  }
+  
+  .message-bubble {
+    padding: 10px 14px;
+  }
+  
+  .message.user .message-bubble,
+  .message.assistant .message-bubble {
+    font-size: 1.2em;
+    border-width: 4px;
+  }
+  
+  .message-text {
+    font-size: 0.9em;
+  }
+  
+  .message-time {
+    font-size: 0.7em;
+  }
+  
+  .chat-input-area {
+    padding: 15px;
+  }
+  
+  .push-to-talk-button {
+    width: min(90%, 280px);
+    height: 80px;
+    font-size: 1.5em;
+    border-width: 4px;
+  }
+  
+  .button-content {
+    flex-direction: column;
+    gap: 5px;
+  }
+  
+  .mic-icon, .recording-icon, .loading-icon {
+    font-size: 1.2em;
+    margin-right: 0;
+    margin-bottom: 0;
+  }
+  
+  .button-text {
+    font-size: 0.9em;
+    margin-bottom: 0;
   }
   
   .keyboard-hint {
+    font-size: 0.75em;
+  }
+}
+
+@media (max-width: 480px) {
+  .chat-container {
+    height: 75vh;
+    padding: 5px;
+    border-width: 3px;
+    border-radius: 25px;
+  }
+  
+  .curio-character {
+    width: 30vw;
+    left: -8vw;
+    top: -4vh;
+  }
+  
+  .curio-character-image {
+    width: 30vw;
+  }
+  
+  .chat-messages {
+    padding: 25px 10px 25px 35px;
+    height: 65vh;
+    border-radius: 25px;
+  }
+  
+  .message {
+    margin-bottom: 12px;
+  }
+  
+  .message-bubble {
+    padding: 8px 12px;
+    border-radius: 15px;
+  }
+  
+  .message.user .message-bubble,
+  .message.assistant .message-bubble {
+    font-size: 1em;
+    border-width: 3px;
+  }
+  
+  .message-text {
+    font-size: 0.85em;
+  }
+  
+  .message-time {
+    font-size: 0.65em;
+  }
+  
+  .chat-input-area {
+    padding: 10px;
+  }
+  
+  .push-to-talk-button {
+    width: min(95%, 250px);
+    height: 70px;
+    font-size: 1.3em;
+    border-width: 3px;
+    border-radius: 80px;
+  }
+  
+  .mic-icon, .recording-icon, .loading-icon {
+    font-size: 1em;
+  }
+  
+  .button-text {
     font-size: 0.8em;
   }
 }

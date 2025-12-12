@@ -1,41 +1,43 @@
 <template>
-  <div class="image-selection-container">
-    <div class="selection-header">
-      <h1 class="selection-title">Choose a Mystery Image!</h1>
-    </div>
-    
-    <div class="images-grid">
-      <div 
-        v-for="(img, index) in images" 
-        :key="index"
-        class="image-card"
-        @click="selectImage(img)"
-        :class="{ selected: selectedImage === img.path }"
-      >
-        <div class="card-frame">
-          <img 
-            :src="img.path" 
-            :alt="img.alt"
-            class="preview-image"
-          />
-          <div class="overlay">
-            <div class="overlay-content">
-              <span class="icon">🔍</span>
-              <!-- <span class="overlay-text">{{ img.name }}</span> -->
+  <div class="image-selection-wrapper">
+    <div class="image-selection-container">
+      <div class="selection-header">
+        <h1 class="selection-title">Choose a Mystery Image!</h1>
+      </div>
+      
+      <div class="images-grid">
+        <div 
+          v-for="(img, index) in images" 
+          :key="index"
+          class="image-card"
+          @click="selectImage(img)"
+          :class="{ selected: selectedImage === img.path }"
+        >
+          <div class="card-frame">
+            <img 
+              :src="img.path" 
+              :alt="img.alt"
+              class="preview-image"
+            />
+            <div class="overlay">
+              <div class="overlay-content">
+                <span class="icon">🔍</span>
+                <!-- <span class="overlay-text">{{ img.name }}</span> -->
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
-    
-    <div class="selection-footer">
-      <button 
-        @click="handleConfirm" 
-        :disabled="!selectedImage"
-        class="confirm-button"
-      >
-        <p class="confirm-button-text">Start</p>
-      </button>
+      
+      <div class="selection-footer">
+        <button 
+          @click="handleConfirm" 
+          :disabled="!selectedImage"
+          class="confirm-button"
+        >
+          <p class="confirm-button-text">Start</p>
+        </button>
+      </div>
     </div>
   </div>
 </template>
@@ -99,9 +101,17 @@ const handleConfirm = () => {
 </style>
 
 <style scoped>
-.image-selection-container {
+.image-selection-wrapper {
   width: 100%;
   height: 100vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+  background: #F75C46;
+}
+
+.image-selection-container {
+  width: 100%;
+  min-height: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -109,6 +119,7 @@ const handleConfirm = () => {
   padding: 40px;
   background: #F75C46;
   font-family: 'Comic Sans MS', cursive, sans-serif;
+  box-sizing: border-box;
 }
 
 .selection-header {
@@ -116,17 +127,15 @@ const handleConfirm = () => {
   margin-bottom: 20px;
   margin-top: 0;
   padding-top: 0;
-  position: relative;
-  top: -60px;
 }
 
 .selection-title {
   font-family: 'Peachy Kink';
-  font-size: 7em;
+  font-size: clamp(2em, 8vw, 6em);
   color: #FAE100;
   border-color: #0011BB;
-  -webkit-text-stroke: 4px #0011BB;
-  text-stroke: 4px #0011BB;
+  -webkit-text-stroke: clamp(1px, 0.5vw, 4px) #0011BB;
+  text-stroke: clamp(1px, 0.5vw, 4px) #0011BB;
   margin-bottom: 10px;
   text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.3);
 }
@@ -166,7 +175,7 @@ const handleConfirm = () => {
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
   border: 8px solid white;
   transition: all 0.3s ease;
-  height: 310px;
+  height: clamp(210px, 30vh, 310px);
 }
 
 .image-card.selected .card-frame {
@@ -176,7 +185,7 @@ const handleConfirm = () => {
 
 .preview-image {
   width: 100%;
-  height: 300px;
+  height: clamp(250px, 28vh, 300px);
   object-fit: cover;
   transition: transform 0.3s ease;
 }
@@ -268,9 +277,6 @@ const handleConfirm = () => {
     gap: 20px;
   }
   
-  .preview-image {
-    height: 200px;
-  }
   
   .confirm-button {
     padding: 15px 40px;
