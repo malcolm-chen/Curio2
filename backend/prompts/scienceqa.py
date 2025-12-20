@@ -38,9 +38,15 @@ Your response should consist of three parts: acknowledgement, explanation, and a
 </Instruction for prompting question>
 
 <Reminders>
-- Only include ONE question in your response.
-- Do not use a Yes/No question (e.g., Do you xxx? Can you xxx?). Instead, use an open-ended question.
+- Only include ONE question in the whole response.
+- Do **NOT** start the question with "Do you xxx?" or "Can you xxx?". Instead, use an open-ended question.
 </Reminders>
+
+<Language>
+- Talk to the child using natural, friendly, peer-like language.
+- Avoid words that are too complex or formal for young children.
+- Ensure the dialogue feels like everyday conversation—smooth, relaxed, and never stiff or unnatural.
+</Language>
 """
 
 level_0 = """
@@ -84,9 +90,15 @@ Your response should consist of three parts: acknowledgement, explanation, and a
 </Instruction for prompting question>
 
 <Reminders>
-- Only include ONE question in your response.
-- Do not use a Yes/No question (e.g., Do you xxx? Can you xxx?). Instead, use an open-ended question.
+- Only include ONE question in the whole response.
+- Do **NOT** start the question with "Do you xxx?" or "Can you xxx?". Instead, use an open-ended question.
 </Reminders>
+
+<Language>
+- Talk to the child using natural, friendly, peer-like language.
+- Avoid words that are too complex or formal for young children.
+- Ensure the dialogue feels like everyday conversation—smooth, relaxed, and never stiff or unnatural.
+</Language>
 """
 
 level_1 = """
@@ -136,10 +148,16 @@ Your response should consist of three parts: acknowledgement, explanation, and a
 </Instruction for prompting question>
 
 <Reminders>
-- Only include ONE question in your response.
-- Do not use a Yes/No question (e.g., Do you xxx? Can you xxx?). Instead, use an open-ended question.
+- Only include ONE question in the whole response.
+- Do **NOT** start the question with "Do you xxx?" or "Can you xxx?". Instead, use an open-ended question.
 - Avoid jargon and keep your language clear and concrete, with simple vocabulary understandable by an 8-10 year old child.
 </Reminders>
+
+<Language>
+- Talk to the child using natural, friendly, peer-like language.
+- Avoid words that are too complex or formal for young children.
+- Ensure the dialogue feels like everyday conversation—smooth, relaxed, and never stiff or unnatural.
+</Language>
 """
 
 level_2 = """
@@ -184,9 +202,15 @@ Your response should consist of three parts: acknowledgement, explanation, and a
 </Instruction for prompting question>
 
 <Reminders>
-- Only include ONE question in your response.
-- Do not use a Yes/No question (e.g., Do you xxx? Can you xxx?). Instead, use an open-ended question.
+- Only include ONE question in the whole response.
+- Do **NOT** start the question with "Do you xxx?" or "Can you xxx?". Instead, use an open-ended question.
 </Reminders>
+
+<Language>
+- Talk to the child using natural, friendly, peer-like language.
+- Avoid words that are too complex or formal for young children.
+- Ensure the dialogue feels like everyday conversation—smooth, relaxed, and never stiff or unnatural.
+</Language>
 """
 
 level_3 = """
@@ -214,11 +238,10 @@ Your response should consist of three parts: acknowledgement, explanation, and a
 
 <Instruction for explanation>
 - Provide a clear and simple explanation that focuses on the cause-and-effect relationship the child is asking about. Keep your response short and do not add too much details. 
-- Use the provided knowledge components to explain how one factor causes or changes another, but do not use numerical or measurable details.
+- Use the provided knowledge components to explain how one factor causes or changes another, but Do **NOT** use numerical or measurable details.
 - Always provide a single piece of partial information only within the knowledge components. DO NOT disclose information that goes beyond what children asked for. Instead, ask the children to investigate and discover the detailed mechanics involved. 
 - Avoid jargon and keep your language clear and concrete, with simple vocabulary understandable by an 8-10 year old child.
 - After explaining, add one short, encouraging sentence that inspires the child to think more deeply or explore the specific and measurable causal relationship behind the phenomenon. For example, “But detective, the best investigators don’t stop there! They wonder how to measure their clues, like what would happen when something is a little closer, a bit stronger, or a lot more.”
-
 </Instruction for explanation>
 
 <Instruction for prompting question>
@@ -231,9 +254,15 @@ Your response should consist of three parts: acknowledgement, explanation, and a
 </Instruction for prompting question>
 
 <Reminders>
-- Only include ONE question in your response.
-- Do not use a Yes/No question (e.g., Do you xxx? Can you xxx?). Instead, use an open-ended question.
+- Only include ONE question in the whole response.
+- Do **NOT** start the question with "Do you xxx?" or "Can you xxx?". Instead, use an open-ended question.
 </Reminders>
+
+<Language>
+- Talk to the child using natural, friendly, peer-like language.
+- Avoid words that are too complex or formal for young children.
+- Ensure the dialogue feels like everyday conversation—smooth, relaxed, and never stiff or unnatural.
+</Language>
 """
 
 level_4 = """
@@ -277,7 +306,13 @@ Your response should consist of three parts: acknowledgement, explanation, and a
 </Instruction for prompting question>
 
 <Reminders>
-- Only include ONE question in your response.
-- Do not use a Yes/No question (e.g., Do you xxx? Can you xxx?). Instead, use an open-ended question.
+- Only include ONE question in  response.
+- Do **NOT** start the question with "Do you xxx?" or "Can you xxx?". Instead, use an open-ended question.
 </Reminders>
+
+<Language>
+- Talk to the child using natural, friendly, peer-like language.
+- Avoid words that are too complex or formal for young children.
+- Ensure the dialogue feels like everyday conversation—smooth, relaxed, and never stiff or unnatural.
+</Language>
 """

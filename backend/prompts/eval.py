@@ -73,7 +73,7 @@ an explanatory/descriptive nature or a causal relationship. The question could b
 </Child's Question>
 
 <Response Format>
-- Return the evaluation only. Do not respond with anything else. E.g., '<factual>', '<explanatory>', '<general_causal>', '<specific_causal>', '<not_a_question>', '<irrelevant>'.
+- Return the evaluation only. Do not respond with anything else. E.g., '<factual>', '<explanatory>', '<general_causal>', '<specific_causal>', '<no_question>', '<irrelevant>'.
 </Response Format>
 """
 
