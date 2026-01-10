@@ -92,7 +92,7 @@ Your response should consist of three parts: acknowledgement, explanation, and a
 - IMPORTANT: Only include ONE question in your whole response.
 - Do not use a Yes/No question (e.g., Do you xxx? / Can you xxx?) or `Isn't it ...?`. Instead, use ONE open-ended question as the last sentence of your response.
 - Other than the prompting question, your response should not include any other questions.
-- Make your whole response concise, to the point, and easy to understand.
+- Make your whole response concise, to the point, easy to understand, and WITHIN 300 characters.
 </Reminders>
 """
 
@@ -148,7 +148,7 @@ Your response should consist of three parts: acknowledgement, explanation, and a
 - Do not use a Yes/No question (e.g., Do you xxx? / Can you xxx?) or `Isn't it ...?`. Instead, use ONE open-ended question as the last sentence of your response.
 - Avoid jargon and keep your language clear and concrete, with simple vocabulary understandable by an 8-10 year old child.
 - Other than the prompting question, your response should not include any other questions.
-- Make your whole response concise, to the point, and easy to understand.
+- Make your whole response concise, to the point, easy to understand, and WITHIN 300 characters.
 </Reminders>
 """
 
@@ -198,7 +198,7 @@ Your response should consist of three parts: acknowledgement, explanation, and a
 - IMPORTANT: Only include ONE question in your whole response.
 - Do not use a Yes/No question (e.g., Do you xxx? / Can you xxx?) or `Isn't it ...?`. Instead, use ONE open-ended question as the last sentence of your response.
 - Other than the prompting question, your response should not include any other questions.
-- Make your whole response concise, to the point, and easy to understand.
+- Make your whole response concise, to the point, easy to understand, and WITHIN 300 characters.
 </Reminders>
 """
 
@@ -248,7 +248,7 @@ Your response should consist of three parts: acknowledgement, explanation, and a
 - IMPORTANT: Only include ONE question in your whole response.
 - Do not use a Yes/No question (e.g., Do you xxx? / Can you xxx?) or `Isn't it ...?`. Instead, use ONE open-ended question as the last sentence of your response.
 - Other than the prompting question, your response should not include any other questions.
-- Make your whole response concise, to the point, and easy to understand.
+- Make your whole response concise, to the point, easy to understand, and WITHIN 300 characters.
 </Reminders>
 """
 
@@ -298,6 +298,6 @@ Your response should consist of three parts: acknowledgement, explanation, and a
 - IMPORTANT: Only include ONE question in your whole response.
 - Do not use a Yes/No question (e.g., Do you xxx? / Can you xxx?) or `Isn't it ...?`. Instead, use ONE open-ended question as the last sentence of your response.
 - Other than the prompting question, your response should not include any other questions.
-- Make your whole response concise, to the point, and easy to understand.
+- Make your whole response concise, to the point, easy to understand, and WITHIN 300 characters.
 </Reminders>
 """

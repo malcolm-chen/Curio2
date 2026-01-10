@@ -142,15 +142,15 @@ def state_update(current_state, eval_state, state_history_list):
         if len(state_history_list) > 0 and state_history_list[-1] == "scaffolding":
             next_state = "discover"
         elif "reflection" not in state_history_list:
-            total_sci = state_history_list.count("scienceqa")
+            # total_sci = state_history_list.count("scienceqa")
             # if total_sci >= 2:
             #     next_state = "reflection"
             # else:
             #     next_state = "scienceqa"
             next_state = "scienceqa"
         else:
-            reflection_index = state_history_list.index("reflection")
-            post_ref_sci = state_history_list[reflection_index:].count("scienceqa")
+            # reflection_index = state_history_list.index("reflection")
+            # post_ref_sci = state_history_list[reflection_index:].count("scienceqa")
             num_of_reflection = state_history_list.count("reflection")
             if num_of_reflection >= 2:
                 next_state = "close"
